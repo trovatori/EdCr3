@@ -1,0 +1,112 @@
+/* --- CONFIGURAZIONE BASE --- */
+:root {
+    --accent: #a03f33;
+    --text-main: #030813;
+    --bg-paper: #fbf9f4;
+}
+
+/* Font e Correzioni Ottiche */
+body {
+    font-family: 'Source Sans 3', sans-serif;
+    color: var(--text-main);
+}
+
+.hidden-pane { display: none !important; }
+
+/* --- TIPOGRAFIA TEI (IL CUORE DEL PROGETTO) --- */
+
+.tei-content {
+    font-family: 'Source Serif 4', serif;
+    font-size: 1.15rem;
+    line-height: 1.8;
+}
+
+/* Stanze */
+.tei-lg {
+    margin-bottom: 2.5rem;
+}
+
+/* Versi */
+.tei-l {
+    position: relative;
+    padding-left: 4rem;
+    margin-bottom: 0.2rem;
+}
+
+/* Numeri di riga (CSS-only styling) */
+.line-n {
+    position: absolute;
+    left: 0;
+    width: 3rem;
+    text-align: right;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    color: var(--accent);
+    opacity: 0.6;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Traduzione: Tutte le regole di tipografia qui */
+.tei-translation .tei-l {
+    font-style: italic; /* La traduzione è sempre in corsivo */
+    color: #4b5563; /* Grigio scuro per distinguere dal testo critico */
+}
+
+/* Apparato critico nel testo */
+.tei-app {
+    border-bottom: 1px dotted var(--accent);
+    cursor: help;
+    background-color: rgba(160, 63, 51, 0.05);
+    padding: 0 2px;
+}
+
+.tei-app:hover {
+    background-color: rgba(160, 63, 51, 0.12);
+}
+
+/* Segmenti con nota/commento */
+.tei-seg {
+    border-bottom: 1px dashed #7c3aed;
+    cursor: pointer;
+    background-color: rgba(124, 58, 237, 0.05);
+}
+
+/* --- UI COMPONENTS --- */
+
+.sidebar-btn {
+    @apply w-10 h-10 flex items-center justify-center rounded-xl transition-all text-slate-400 hover:bg-slate-200;
+}
+
+.sidebar-btn-active {
+    @apply bg-accent text-white shadow-lg shadow-accent/20;
+}
+
+.tab-btn {
+    @apply px-4 h-full text-sm font-medium border-b-2 border-transparent transition-colors text-slate-500;
+}
+
+.tab-btn.tab-active {
+    @apply border-accent text-accent;
+}
+
+/* Note nel pannello laterale */
+.note-item {
+    @apply p-4 rounded-lg border border-slate-200 bg-white transition-all hover:border-accent/30 shadow-sm;
+}
+
+.note-target {
+    @apply text-xs font-bold text-accent uppercase mb-1 block;
+}
+
+.note-text {
+    @apply text-sm leading-relaxed italic text-slate-700;
+}
+
+/* Header Text Styles */
+.header-author { font-weight: 700; font-size: 1.1rem; }
+.header-title { font-style: italic; color: var(--accent); font-size: 1.1rem; }
+
+/* Scrollbar */
+.custom-scroll::-webkit-scrollbar { width: 4px; }
+.custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }

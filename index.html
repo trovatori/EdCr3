@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html class="light" lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Guglielmo IX - Edizione Digitale</title>
+
+  <!-- Tailwind e Google Fonts -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..700;1,8..60,200..700&family=Source+Sans+3:wght@400;500;600;700;800&display=swap"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300&display=swap"
+  rel="stylesheet"
+/>
+
+<link rel="stylesheet" href="style.css" />
+
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          background: "#fbf9f4",
+          primary: "#030813",
+          secondary: "#a03f33",
+          outline: "#76777c",
+          surface: "#f5f5f0"
+        },
+        fontFamily: {
+          serif: ["Source Serif 4", "serif"],
+          ui: ["Source Sans 3", "sans-serif"]
+        }
+      }
+    }
+  }
+</script>
+
+  <style>
+    /* RESET E INTERFACCIA */
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+    .tab-active { border-bottom: 2px solid #a03f33 !important; color: #a03f33 !important; font-weight: 700 !important; }
+    .hidden-pane { display: none !important; }
+    .sidebar-btn-active { background-color: white !important; border-right: 3px solid #a03f33 !important; font-weight: 700 !important; color: #030813 !important; }
+    
+    /* TIPOGRAFIA TEI */
+    .tei-front-content h1 { font-family: 'Source Sans 3', sans-serif; font-size: 2.25rem; font-weight: 800; text-transform: uppercase; letter-spacing: -0.01em; margin-bottom: 2rem; color: #030813; }
+    .tei-front-content h2 { font-family: 'Source Sans 3', sans-serif; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2.5rem; margin-bottom: 1rem; color: #475569; }
+
+    /* ELEMENTI FILOLOGICI */
+    .tei-app { border-bottom: 1px dotted #a03f33; cursor: pointer; transition: background 0.2s; background: rgba(160, 63, 51, 0.03); }
+    .tei-app:hover { background-color: rgba(160, 63, 51, 0.1); }
+    .tei-seg { border-bottom: 1px dashed #76777c; cursor: help; }
+    .tei-lg { margin-bottom: 3rem; }
+    
+    .custom-scroll::-webkit-scrollbar { width: 5px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+
+    /* LAYOUT DINAMICO */
+    .layout-single #col-right { display: none; }
+    .layout-single #col-left { width: 100%; border-right: none; }
+    .layout-dual #col-right { display: flex; }
+    .layout-dual #col-left { width: 50%; border-right-width: 1px; }
+
+    /* FACSIMILE NAVIGATION */
+    .facsimile-wrapper {
+      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .facsimile-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0.75rem 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    /* CUSTOM DROPDOWN PER TESTIMONI */
+    .custom-dropdown {
+      position: relative;
+      width: 180px;
+    }
+
+    .dropdown-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      background: white;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 0.5rem;
+      font-size: 11px;
+      font-weight: 800;
+      color: #030813;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .dropdown-trigger:hover {
+      border-color: #a03f33;
+      color: #a03f33;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      width: 100%;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      display: none;
+      flex-direction: column;
+      z-index: 100;
+      overflow: hidden;
+    }
+
+    .dropdown-menu.show {
+      display: flex;
+    }
+
+    .dropdown-item {
+      padding: 0.6rem 0.75rem;
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      background: white;
+      transition: all 0.15s;
+    }
+
+    .dropdown-item:hover {
+      background: #f8fafc;
+      color: #a03f33;
+    }
+
+    .dropdown-item.active {
+      background: rgba(160, 63, 51, 0.05);
+      color: #a03f33;
+      font-weight: 800;
+    }
+
+    /* PULSANTI NAVIGAZIONE */
+    .nav-btn {
+      padding: 0.4rem 0.8rem;
+      border-radius: 0.375rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav-btn:hover:not(:disabled) { 
+      background: #f1f5f9; 
+      color: #a03f33;
+      border-color: #a03f33;
+    }
+    .nav-btn:disabled { 
+      opacity: 0.3; 
+      cursor: not-allowed; 
+    }
+
+    .page-indicator {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #a03f33;
+      min-width: 60px;
+      text-align: center;
+      font-family: 'Source Sans 3', sans-serif;
+    }
+
+    /* AREA FACSIMILE CON ZOOM E GRAB */
+    .fac-img-container {
+      flex: 1;
+      position: relative;
+      background: #f1f5f9;
+      overflow: hidden;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .fac-img-container:active { cursor: grabbing; }
+
+    .viewport-layer {
+      position: absolute;
+      transform-origin: center center;
+      transition: transform 0.1s ease-out;
+      will-change: transform;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fac-img-item img {
+      max-width: none;
+      height: 85vh;
+      pointer-events: none; /* Impedisce il drag nativo del browser */
+      shadow: 0 20px 50px rgba(0,0,0,0.15);
+      border-radius: 4px;
+    }
+
+    /* NOTE BOX */
+    .note-box {
+      background: #fff;
+      border-left: 4px solid #a03f33;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    .note-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: #a03f33;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  </style>
+</head>
+
+<body class="bg-background text-primary font-ui selection:bg-secondary/20 layout-single" id="main-body" onclick="closeAllDropdowns(event)">
+
+<header class="border-b sticky top-0 z-50 bg-stone-50/95 backdrop-blur-sm shadow-sm">
+  <div class="flex justify-between items-center px-8 py-3 max-w-screen-2xl mx-auto">
+    <div id="header-meta" class="flex flex-col gap-0.5">Caricamento in corso...</div>
+    <div class="flex items-center gap-6">
+      <div id="loading-indicator" class="text-[10px] uppercase tracking-widest text-slate-400 font-bold"></div>
+      <div class="flex gap-1">
+        <button class="p-2 rounded-full hover:bg-stone-200"><span class="material-symbols-outlined">settings</span></button>
+        <button class="p-2 rounded-full hover:bg-stone-200"><span class="material-symbols-outlined">menu_book</span></button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="flex h-[calc(100vh-69px)] overflow-hidden">
+  <aside class="w-72 shrink-0 flex flex-col border-r bg-stone-100/50 overflow-y-auto">
+    <div class="p-8 border-b">
+      <p class="uppercase tracking-[0.15em] text-[10px] font-black text-primary">Edizione Digitale</p>
+      <p class="text-[9px] uppercase tracking-widest text-slate-500 mt-1">Archivio Guglielmo IX</p>
+    </div>
+    <nav class="flex-1 py-4 space-y-1">
+      <button id="btn-introduction" onclick="changeMainView('introduction', this)" class="sidebar-btn-active w-full flex items-center px-8 py-4 text-[11px] uppercase tracking-[0.12em] font-bold text-slate-600 hover:bg-stone-200/50 transition-all">
+        <span class="material-symbols-outlined mr-4 opacity-70">info</span> Introduzione
+      </button>
+      <button id="btn-criteria" onclick="changeMainView('criteria', this)" class="w-full flex items-center px-8 py-4 text-[11px] uppercase tracking-[0.12em] font-bold text-slate-600 hover:bg-stone-200/50 transition-all">
+        <span class="material-symbols-outlined mr-4 opacity-70">history_edu</span> Nota Critica
+      </button>
+      <button id="btn-witnesses" onclick="changeMainView('witnesses', this)" class="w-full flex items-center px-8 py-4 text-[11px] uppercase tracking-[0.12em] font-bold text-slate-600 hover:bg-stone-200/50 transition-all">
+        <span class="material-symbols-outlined mr-4 opacity-70">list</span> Lista Testimoni
+      </button>
+      <div class="px-8 py-2"><hr class="border-stone-200"></div>
+      <button id="btn-edition" onclick="changeMainView('edition', this)" class="w-full flex items-center px-8 py-4 text-[11px] uppercase tracking-[0.12em] font-bold text-slate-600 hover:bg-stone-200/50 transition-all">
+        <span class="material-symbols-outlined mr-4 opacity-70">auto_stories</span> Edizione
+      </button>
+      <button id="btn-bibliography" onclick="changeMainView('bibliography', this)" class="w-full flex items-center px-8 py-4 text-[11px] uppercase tracking-[0.12em] font-bold text-slate-600 hover:bg-stone-200/50 transition-all">
+        <span class="material-symbols-outlined mr-4 opacity-70">article</span> Bibliografia
+      </button>
+    </nav>
+    <div class="p-8 border-t bg-stone-100/80">
+      <div id="resp-info" class="text-[10px] text-slate-400 uppercase tracking-widest leading-relaxed font-bold"></div>
+    </div>
+  </aside>
+
+  <main class="flex-1 flex overflow-hidden">
+    <!-- COLONNA SINISTRA -->
+    <section class="flex flex-col bg-white overflow-hidden transition-all duration-300" id="col-left">
+      <div id="left-tabs" class="hidden-pane flex px-4 border-b h-12 font-ui text-[10px] uppercase font-bold tracking-widest bg-stone-50/50">
+        <button data-pane="testo" class="tab-active px-4" onclick="switchPane('col-left', 'testo')">Testo Critico</button>
+        <button data-pane="facsimile" class="px-4" onclick="switchPane('col-left', 'facsimile')">Facsimile</button>
+        <button data-pane="traduzione" class="px-4" onclick="switchPane('col-left', 'traduzione')">Traduzione</button>
+        <button data-pane="apparato" class="px-4" onclick="switchPane('col-left', 'apparato')">Apparato Critico</button>
+        <button data-pane="commento" class="px-4" onclick="switchPane('col-left', 'commento')">Note di Commento</button>
+      </div>
+      <div class="flex-1 overflow-y-auto custom-scroll" id="scroll-left">
+        <div id="view-introduction" class="mx-auto tei-front-content max-w-[850px] p-12"></div>
+        <div id="view-criteria" class="hidden-pane mx-auto tei-front-content max-w-[850px] p-12"></div>
+        <div id="view-witnesses" class="hidden-pane mx-auto tei-front-content max-w-[850px] p-12"></div>
+        <div id="view-bibliography" class="hidden-pane mx-auto tei-front-content max-w-[850px] p-12">
+            <h1>Bibliografia</h1>
+            <p class="italic text-slate-400">Nessun dato bibliografico trovato nell'XML.</p>
+        </div>
+        
+        <div id="edition-panes-L" class="hidden-pane tei-content h-full">
+            <div class="pane-testo p-12" id="out-testo-L"></div>
+            <div class="pane-facsimile hidden-pane h-full" id="out-facsimile-L"></div>
+            <div class="pane-traduzione p-12 hidden-pane" id="out-traduzione-L"></div>
+            <div class="pane-apparato p-12 hidden-pane space-y-2 text-sm" id="out-apparato-L"></div>
+            <div class="pane-commento p-12 hidden-pane" id="out-commento-L"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLONNA DESTRA -->
+    <section class="flex-1 flex flex-col bg-surface overflow-hidden transition-all duration-300" id="col-right">
+      <div class="flex px-4 border-b h-12 font-ui text-[10px] uppercase font-bold tracking-widest bg-stone-50/50">
+        <button data-pane="testo" class="px-4" onclick="switchPane('col-right', 'testo')">Testo Critico</button>
+        <button data-pane="facsimile" class="px-4" onclick="switchPane('col-right', 'facsimile')">Facsimile</button>
+        <button data-pane="traduzione" class="px-4" onclick="switchPane('col-right', 'traduzione')">Traduzione</button>
+        <button data-pane="apparato" class="tab-active px-4" onclick="switchPane('col-right', 'apparato')">Apparato Critico</button>
+        <button data-pane="commento" class="px-4" onclick="switchPane('col-right', 'commento')">Note di Commento</button>
+      </div>
+      <div class="flex-1 overflow-y-auto custom-scroll" id="scroll-right">
+        <div class="pane-testo hidden-pane tei-content p-12" id="out-testo-R"></div>
+        <div class="pane-facsimile hidden-pane h-full" id="out-facsimile-R"></div>
+        <div class="pane-traduzione hidden-pane tei-content p-12" id="out-traduzione-R"></div>
+        <div class="pane-apparato space-y-2 text-sm tei-content p-12" id="out-apparato-R"></div>
+        <div class="pane-commento hidden-pane tei-content p-12" id="out-commento-R"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const NS = "http://www.tei-c.org/ns/1.0";
+let globalXmlDoc = null;
+
+let facsimileState = {
+    'col-left': { currentIdx: 0, witId: null, filteredIndices: [], zoom: 1, x: 0, y: 0, isDragging: false, lastMouseX: 0, lastMouseY: 0 },
+    'col-right': { currentIdx: 0, witId: null, filteredIndices: [], zoom: 1, x: 0, y: 0, isDragging: false, lastMouseX: 0, lastMouseY: 0 }
+};
+
+async function init() {
+    const status = document.getElementById('loading-indicator');
+    try {
+        const response = await fetch('guglielmo.xml');
+        const text = await response.text();
+        globalXmlDoc = new DOMParser().parseFromString(text, "application/xml");
+        renderHeader(globalXmlDoc);
+        renderFrontMatter(globalXmlDoc);
+        renderEdition(globalXmlDoc);
+        renderWitnesses(globalXmlDoc);
+        renderFacsimile(globalXmlDoc);
+        renderTranslation(globalXmlDoc);
+        status.innerText = "Sincronizzato";
+    } catch (e) {
+        status.innerText = "Errore XML";
+        console.error(e);
+    }
+}
+
+function renderHeader(xml) {
+    const author = xml.getElementsByTagNameNS(NS, 'author')[0]?.textContent;
+    const title = xml.getElementsByTagNameNS(NS, 'title')[0]?.textContent;
+    const resp = xml.getElementsByTagNameNS(NS, 'name')[0]?.textContent;
+    document.getElementById('header-meta').innerHTML = `
+      <span class="header-author text-primary font-bold text-lg">${author}</span>
+      <span class="header-title text-secondary italic text-sm font-serif">${title}</span>
+    `;
+    document.getElementById('resp-info').innerText = `Edizione digitale a cura di ${resp}`;
+}
+
+function renderFrontMatter(xml) {
+    const preface = Array.from(xml.getElementsByTagNameNS(NS, 'div')).find(d => d.getAttribute('type') === 'preface');
+    const criteria = Array.from(xml.getElementsByTagNameNS(NS, 'div')).find(d => d.getAttribute('type') === 'criteria');
+    if (preface) document.getElementById('view-introduction').innerHTML = `<h1>Introduzione</h1>` + formatTEIContent(preface);
+    if (criteria) document.getElementById('view-criteria').innerHTML = `<h1>Nota Critica</h1>` + formatTEIContent(criteria);
+}
+
+function formatTEIContent(node) {
+    let html = "";
+    node.childNodes.forEach(child => {
+        if (child.localName === 'p') html += `<p class="mb-6 leading-relaxed text-lg text-justify font-serif">${child.innerHTML}</p>`;
+        else if (child.localName === 'head') html += `<h2>${child.innerHTML}</h2>`;
+        else if (child.nodeType === 3 && child.textContent.trim()) html += `<p class="mb-6 leading-relaxed text-lg text-justify font-serif">${child.textContent}</p>`;
+    });
+    return html;
+}
+
+function renderWitnesses(xml) {
+    const wits = Array.from(xml.getElementsByTagNameNS(NS, 'witness'));
+    let html = `<h1>Lista dei Testimoni</h1><div class="mt-8">`;
+    wits.forEach(w => {
+        html += `<div class="witness-entry flex items-baseline gap-6 pb-4 mb-4 border-b border-stone-200">
+            <span class="text-secondary font-black text-2xl w-12">${w.getAttribute('xml:id')}</span>
+            <span class="text-xl text-slate-700 font-serif">${w.textContent}</span>
+        </div>`;
+    });
+    html += `</div>`;
+    document.getElementById('view-witnesses').innerHTML = html;
+}
+
+function renderEdition(xml) {
+    const edition = Array.from(xml.getElementsByTagNameNS(NS, 'div')).find(d => d.getAttribute('type') === 'edition');
+    if (!edition) return;
+
+    let textHtml = "";
+    let appHtml = "";
+    let commHtml = "";
+
+    const lgs = Array.from(edition.getElementsByTagNameNS(NS, 'lg'));
+    lgs.forEach(lg => {
+        textHtml += `<div class="tei-lg">`;
+        Array.from(lg.getElementsByTagNameNS(NS, 'l')).forEach(l => {
+            const n = l.getAttribute('n');
+            let lineContent = "";
+            
+            function walk(node) {
+                let out = "";
+                node.childNodes.forEach(child => {
+                    if (child.nodeType === 3) out += child.textContent;
+                    else if (child.nodeType === 1) {
+                        if (child.localName === 'app') {
+                            const lem = child.getElementsByTagNameNS(NS, 'lem')[0]?.textContent;
+                            const rdgs = Array.from(child.getElementsByTagNameNS(NS, 'rdg')).map(r => 
+                                `<span class="italic font-serif">${r.textContent}</span> (${r.getAttribute('wit').replace('#','')})`
+                            ).join(', ');
+                            appHtml += `<div class="p-3 border-b border-stone-200/50 hover:bg-stone-100 transition-colors cursor-pointer" onclick="syncTab('apparato')"><span class="font-bold text-slate-400 mr-4 text-xs">${n}</span><span class="text-secondary font-bold italic font-serif">${lem}</span>] ${rdgs}</div>`;
+                            out += `<span class="tei-app" onclick="syncTab('apparato')">${lem}</span>`;
+                        } else if (child.localName === 'seg') {
+                            const sid = child.getAttribute('xml:id');
+                            out += `<span class="tei-seg" onclick="syncTab('commento', '${sid}')">${child.textContent}</span>`;
+                        } else { out += walk(child); }
+                    }
+                });
+                return out;
+            }
+            lineContent = walk(l);
+            textHtml += `<div class="tei-l"><span class="line-n">${n}</span>${lineContent}</div>`;
+        });
+        textHtml += `</div>`;
+    });
+
+    Array.from(xml.getElementsByTagNameNS(NS, 'note')).forEach(n => {
+        const target = n.getAttribute('target')?.replace('#', '');
+        commHtml += `<div id="note-${target}" class="note-box">
+            <div class="note-label"><span class="material-symbols-outlined text-sm">chat_bubble</span> Nota di commento</div>
+            <div class="text-base leading-relaxed text-slate-800 font-serif">${n.innerHTML}</div>
+        </div>`;
+    });
+
+    ['L', 'R'].forEach(suff => {
+        document.getElementById(`out-testo-${suff}`).innerHTML = textHtml;
+        document.getElementById(`out-apparato-${suff}`).innerHTML = appHtml;
+        document.getElementById(`out-commento-${suff}`).innerHTML = commHtml;
+    });
+}
+
+function renderTranslation(xml) {
+    const trans = Array.from(xml.getElementsByTagNameNS(NS, 'div')).find(d => d.getAttribute('type') === 'translation');
+    if (!trans) return;
+    let html = "";
+    Array.from(trans.getElementsByTagNameNS(NS, 'l')).forEach(l => {
+        html += `<div class="tei-l"><span class="line-n">${l.getAttribute('n')}</span>${l.textContent}</div>`;
+    });
+    document.getElementById('out-traduzione-L').innerHTML = html;
+    document.getElementById('out-traduzione-R').innerHTML = html;
+}
+
+function renderFacsimile(xml) {
+    const witnesses = Array.from(xml.getElementsByTagNameNS(NS, 'witness')).map(w => ({
+        id: w.getAttribute('xml:id'),
+        name: w.textContent.split(',')[0].trim()
+    }));
+    const surfaces = Array.from(xml.getElementsByTagNameNS(NS, 'surface'));
+    
+    function createPaneContent(columnId) {
+        let html = `
+            <div class="facsimile-wrapper">
+                <div class="facsimile-toolbar flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="text-[9px] font-black uppercase text-slate-400">Testimone</span>
+                        <div class="custom-dropdown" id="dropdown-${columnId}">
+                            <button onclick="toggleDropdown('${columnId}', event)" class="dropdown-trigger">
+                                <span id="selected-wit-${columnId}">Seleziona...</span>
+                                <span class="material-symbols-outlined text-sm">expand_more</span>
+                            </button>
+                            <div class="dropdown-menu" id="menu-${columnId}">
+                                ${witnesses.map(w => `<div onclick="updateWitness('${w.id}', '${columnId}')" class="dropdown-item" data-val="${w.id}">${w.id} - ${w.name}</div>`).join('')}
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 ml-4">
+                            <button onclick="zoomFacsimile('${columnId}', 1.2)" class="nav-btn" title="Zoom +"><span class="material-symbols-outlined text-sm">zoom_in</span></button>
+                            <button onclick="zoomFacsimile('${columnId}', 0.8)" class="nav-btn" title="Zoom -"><span class="material-symbols-outlined text-sm">zoom_out</span></button>
+                            <button onclick="resetZoom('${columnId}')" class="nav-btn" title="Reset Zoom"><span class="material-symbols-outlined text-sm">restart_alt</span></button>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <button onclick="changePage('${columnId}', 'first')" class="nav-btn nav-btn-first">inizio</button>
+                        <button onclick="changePage('${columnId}', 'prev')" class="nav-btn nav-btn-prev">prec.</button>
+                        <div class="page-indicator mx-2" id="page-num-${columnId}">-</div>
+                        <button onclick="changePage('${columnId}', 'next')" class="nav-btn nav-btn-next">succ.</button>
+                        <button onclick="changePage('${columnId}', 'last')" class="nav-btn nav-btn-last">fine</button>
+                    </div>
+                </div>
+                <div class="fac-img-container" id="container-${columnId}" 
+                     onmousedown="startDrag('${columnId}', event)" 
+                     ondblclick="resetZoom('${columnId}')" 
+                     onwheel="handleWheel('${columnId}', event)">
+                    <div class="viewport-layer" id="viewport-${columnId}">
+        `;
+
+        html += surfaces.map((s, idx) => {
+            const url = s.getElementsByTagNameNS(NS, 'graphic')[0]?.getAttribute('url');
+            const witId = s.getAttribute('corresp').replace('#', '');
+            const pageN = s.getAttribute('n');
+            return `<div class="fac-img-item hidden-pane" data-wit="${witId}" data-n="${pageN}">
+                <img src="${url}" draggable="false" onerror="this.src='https://via.placeholder.com/600x800?text=Immagine+non+disponibile'">
+            </div>`;
+        }).join('');
+
+        html += `</div></div></div>`;
+        return html;
+    }
+
+    document.getElementById('out-facsimile-L').innerHTML = createPaneContent('col-left');
+    document.getElementById('out-facsimile-R').innerHTML = createPaneContent('col-right');
+
+    if (witnesses.length > 0) {
+        updateWitness(witnesses[0].id, 'col-left');
+        updateWitness(witnesses[0].id, 'col-right');
+    }
+}
+
+/* LOGICA ZOOM E GRAB */
+function handleWheel(columnId, e) {
+    e.preventDefault();
+    const factor = e.deltaY < 0 ? 1.1 : 0.9;
+    zoomFacsimile(columnId, factor);
+}
+
+function zoomFacsimile(columnId, factor) {
+    const state = facsimileState[columnId];
+    const newZoom = state.zoom * factor;
+    // Limite minimo 0.5x, massimo 8x
+    state.zoom = Math.min(Math.max(newZoom, 0.5), 8);
+    updateTransform(columnId);
+}
+
+function resetZoom(columnId) {
+    const state = facsimileState[columnId];
+    state.zoom = 1;
+    state.x = 0;
+    state.y = 0;
+    updateTransform(columnId);
+}
+
+function startDrag(columnId, e) {
+    if (e.button !== 0) return; // Solo tasto sinistro
+    const state = facsimileState[columnId];
+    state.isDragging = true;
+    state.lastMouseX = e.clientX;
+    state.lastMouseY = e.clientY;
+
+    const onMove = (moveEvent) => {
+        if (!state.isDragging) return;
+        const dx = moveEvent.clientX - state.lastMouseX;
+        const dy = moveEvent.clientY - state.lastMouseY;
+        state.x += dx;
+        state.y += dy;
+        state.lastMouseX = moveEvent.clientX;
+        state.lastMouseY = moveEvent.clientY;
+        updateTransform(columnId);
+    };
+
+    const onUp = () => {
+        state.isDragging = false;
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+}
+
+function updateTransform(columnId) {
+    const vp = document.getElementById(`viewport-${columnId}`);
+    if (!vp) return;
+    const state = facsimileState[columnId];
+    vp.style.transform = `translate(${state.x}px, ${state.y}px) scale(${state.zoom})`;
+}
+
+/* GESTIONE DROPDOWN PERSONALIZZATO */
+function toggleDropdown(columnId, event) {
+    event.stopPropagation();
+    const menu = document.getElementById(`menu-${columnId}`);
+    const isShowing = menu.classList.contains('show');
+    closeAllDropdowns();
+    if (!isShowing) menu.classList.add('show');
+}
+
+function closeAllDropdowns() {
+    document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+}
+
+function updateWitness(witId, columnId) {
+    const column = document.getElementById(columnId);
+    facsimileState[columnId].witId = witId;
+    const triggerLabel = document.getElementById(`selected-wit-${columnId}`);
+    if (triggerLabel) triggerLabel.innerText = witId;
+
+    const menu = document.getElementById(`menu-${columnId}`);
+    menu.querySelectorAll('.dropdown-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.val === witId);
+    });
+
+    const images = Array.from(column.querySelectorAll('.fac-img-item'));
+    facsimileState[columnId].filteredIndices = images
+        .map((img, i) => img.dataset.wit === witId ? i : -1)
+        .filter(i => i !== -1);
+    
+    facsimileState[columnId].currentIdx = 0;
+    resetZoom(columnId);
+    updateFacsimileDisplay(columnId);
+    closeAllDropdowns();
+}
+
+function changePage(columnId, action) {
+    const state = facsimileState[columnId];
+    const maxIdx = state.filteredIndices.length - 1;
+    if (action === 'first') state.currentIdx = 0;
+    else if (action === 'last') state.currentIdx = maxIdx;
+    else if (action === 'prev' && state.currentIdx > 0) state.currentIdx--;
+    else if (action === 'next' && state.currentIdx < maxIdx) state.currentIdx++;
+    resetZoom(columnId);
+    updateFacsimileDisplay(columnId);
+}
+
+function updateFacsimileDisplay(columnId) {
+    const column = document.getElementById(columnId);
+    const state = facsimileState[columnId];
+    const images = column.querySelectorAll('.fac-img-item');
+    const pageDisplay = document.getElementById(`page-num-${columnId}`);
+    
+    images.forEach(img => img.classList.add('hidden-pane'));
+    const globalIdx = state.filteredIndices[state.currentIdx];
+    if (globalIdx !== undefined) {
+        const activeImg = images[globalIdx];
+        activeImg.classList.remove('hidden-pane');
+        pageDisplay.innerText = activeImg.dataset.n;
+    }
+
+    const isFirst = state.currentIdx === 0;
+    const isLast = state.currentIdx === state.filteredIndices.length - 1;
+    column.querySelector('.nav-btn-first').disabled = isFirst;
+    column.querySelector('.nav-btn-prev').disabled = isFirst;
+    column.querySelector('.nav-btn-next').disabled = isLast;
+    column.querySelector('.nav-btn-last').disabled = isLast;
+}
+
+function changeMainView(viewId, btn) {
+    const body = document.getElementById('main-body');
+    const leftTabs = document.getElementById('left-tabs');
+    const editionPanesL = document.getElementById('edition-panes-L');
+    document.querySelectorAll('aside button').forEach(b => b.classList.remove('sidebar-btn-active'));
+    btn.classList.add('sidebar-btn-active');
+    
+    ['view-introduction', 'view-criteria', 'view-witnesses', 'view-bibliography'].forEach(v => {
+        const el = document.getElementById(v);
+        if (el) el.classList.add('hidden-pane');
+    });
+    
+    if (viewId === 'edition') {
+        body.classList.replace('layout-single', 'layout-dual');
+        leftTabs.classList.remove('hidden-pane');
+        editionPanesL.classList.remove('hidden-pane');
+        switchPane('col-left', 'testo');
+        switchPane('col-right', 'apparato');
+    } else {
+        body.classList.replace('layout-dual', 'layout-single');
+        leftTabs.classList.add('hidden-pane');
+        editionPanesL.classList.add('hidden-pane');
+        const targetView = document.getElementById('view-' + viewId);
+        if (targetView) targetView.classList.remove('hidden-pane');
+    }
+}
+
+function switchPane(columnId, paneName) {
+    const column = document.getElementById(columnId);
+    const tabs = column.querySelectorAll('button[data-pane]');
+    tabs.forEach(t => {
+        if (t.dataset.pane === paneName) t.classList.add('tab-active');
+        else t.classList.remove('tab-active');
+    });
+    
+    const container = columnId === 'col-left' ? document.getElementById('edition-panes-L') : column;
+    container.querySelectorAll('[class*="pane-"]').forEach(p => {
+        if (p.classList.contains('pane-' + paneName)) p.classList.remove('hidden-pane');
+        else p.classList.add('hidden-pane');
+    });
+}
+
+function syncTab(pane, id) {
+    if (document.getElementById('main-body').classList.contains('layout-single')) {
+        changeMainView('edition', document.getElementById('btn-edition'));
+    }
+    switchPane('col-right', pane);
+    if (id) {
+        setTimeout(() => {
+            const el = document.getElementById('note-' + id);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 150);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+});
+</script>
+</body>
+</html>
