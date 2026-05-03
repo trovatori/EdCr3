@@ -1,0 +1,1733 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edizione Digitale TEI</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --accent: #a03f33;
+        --accent-light: rgba(160, 63, 51, 0.08);
+        --accent-hover: rgba(160, 63, 51, 0.15);
+        --bg: #fbf9f4;
+        --bg-panel: #f5f3ee;
+        --text: #1a1410;
+        --muted: #6b7280;
+        --border: #e2ddd6;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Source Sans 3", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+      }
+
+      /* ── LAYOUT ── */
+      .layout-single #col-right {
+        display: none !important;
+      }
+      .layout-single #col-left {
+        width: 100% !important;
+        border-right: none !important;
+      }
+      .layout-dual #col-right {
+        display: flex !important;
+      }
+      .layout-dual #col-left {
+        width: 50% !important;
+        border-right: 1px solid var(--border) !important;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      /* ── SIDEBAR ── */
+      aside {
+        width: 220px;
+        flex-shrink: 0;
+        background: var(--bg-panel);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .nav-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 11px 20px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        background: none;
+        border: none;
+        border-left: 3px solid transparent;
+        cursor: pointer;
+        transition: all 0.18s;
+        text-align: left;
+      }
+      .nav-btn:hover {
+        background: rgba(0, 0, 0, 0.04);
+        color: var(--text);
+      }
+      .nav-btn.active {
+        background: white;
+        border-left-color: var(--accent);
+        color: var(--accent);
+        font-weight: 800;
+      }
+      .nav-btn .material-symbols-outlined {
+        font-size: 18px;
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 300,
+          "GRAD" 0,
+          "opsz" 20;
+      }
+
+      /* ── TABS ── */
+      .tab-bar {
+        display: flex;
+        align-items: stretch;
+        border-bottom: 1px solid var(--border);
+        background: white;
+        min-height: 40px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .tab-bar::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tab {
+        padding: 0 14px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--muted);
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.15s;
+        margin-bottom: -1px;
+      }
+      .tab:hover {
+        color: var(--text);
+      }
+      .tab.active {
+        color: var(--accent);
+        border-bottom-color: var(--accent);
+      }
+
+      /* ── SCROLLABLE PANES ── */
+      .scroll-pane {
+        flex: 1;
+        overflow-y: auto;
+      }
+      .scroll-pane::-webkit-scrollbar {
+        width: 4px;
+      }
+      .scroll-pane::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 4px;
+      }
+
+      /* ── FRONT-MATTER ── */
+      .prose {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 52px 48px;
+      }
+      .prose h1 {
+        font-family: "Source Sans 3", sans-serif,;
+        font-size: 1.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: -0.01em;
+        margin: 0 0 2rem;
+        color: var(--accent);
+      }
+      .prose h2 {
+        font-family: "Source Sans 3", sans-serif;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        margin: 2.5rem 0 0.8rem;
+      }
+      .prose p {
+        font-family: "Source Serif 4", serif;
+        font-size: 1.05rem;
+        line-height: 1.85;
+        margin: 0 0 1.2rem;
+      }
+
+      /* ── TESTO CRITICO ── */
+      .tei-content {
+        font-family: "Source Serif 4", serif;
+        font-size: 1.1rem;
+        line-height: 1.9;
+        padding: 48px 52px;
+      }
+      .tei-lg {
+        margin-bottom: 1.5rem;
+      }
+      .tei-l {
+        position: relative;
+        padding-left: 3.5rem;
+        margin-bottom: 0.15rem;
+      }
+      .line-n {
+        position: absolute;
+        left: 0;
+        width: 2.8rem;
+        text-align: right;
+        font-family: "Source Sans 3", sans-serif;
+        font-size: 0.7rem;
+        color: var(--accent);
+        opacity: 0.55;
+        user-select: none;
+        top: 0.25em;
+      }
+
+      /* ── APP ── */
+      .tei-app {
+        border-bottom: 1px dotted var(--accent);
+        background: var(--accent-light);
+        cursor: pointer;
+        padding: 0 1px;
+        transition: background 0.15s;
+      }
+      .tei-app.conjecture::before {
+        content: "⟨";
+        font-size: 0.85em;
+        color: var(--accent);
+      }
+      .tei-app.conjecture::after {
+        content: "⟩";
+        font-size: 0.85em;
+        color: var(--accent);
+      }
+      .tei-app:hover,
+      .tei-app.hl {
+        background: var(--accent-hover);
+      }
+      .tei-app.hl {
+        outline: 1px solid var(--accent);
+        border-radius: 2px;
+      }
+
+      /* ── SEG / NOTE ── */
+      .tei-seg {
+        cursor: pointer;
+      }
+      .note-marker {
+        font-family: "Source Sans 3", sans-serif;
+        font-size: 0.65em;
+        vertical-align: super;
+        line-height: 1;
+        color: #536878;
+        font-weight: 700;
+        cursor: pointer;
+        border-bottom: none;
+        transition: color 0.15s;
+      }
+      .note-marker:hover,
+      .note-marker.hl {
+        color: #3a4f5e;
+      }
+
+      /* ── APPARATO ── */
+      .app-entry {
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border);
+        font-family: "Source Serif 4", serif;
+        font-size: 0.95rem;
+        transition: background 0.15s;
+        cursor: pointer;
+      }
+      .app-entry:hover {
+        background: #faf8f5;
+      }
+      .app-entry.hl {
+        background: rgba(124, 58, 237, 0.07);
+        outline: 1px solid rgba(124, 58, 237, 0.3);
+      }
+      .app-entry .line-ref {
+        font-family: "Source Sans 3", sans-serif;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--muted);
+        margin-right: 8px;
+      }
+      .app-entry .lem-text {
+        color: var(--accent);
+        font-style: italic;
+      }
+      .app-entry .rdg-text {
+        font-style: italic;
+      }
+      .app-entry .wit-sig {
+        font-family: "Source Sans 3", sans-serif;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      /* ── COMMENTO ── */
+      .note-entry {
+        border-left: 3px solid #3a4f5e;
+        padding: 14px 18px;
+        margin: 16px;
+        background: rgba(83,104,120,0.06);
+        font-family: "Source Serif 4", serif;
+        font-size: 0.95rem;
+        transition: background 0.15s;
+      }
+      .note-entry.hl {
+        background: rgba(83,104,120,0.13);
+      }
+      .note-marker-label {
+        font-family: "Source Sans 3", sans-serif;
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: #536878;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 6px;
+      }
+
+      /* ── TESTIMONI ── */
+      .wit-entry {
+        display: flex;
+        align-items: baseline;
+        gap: 20px;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .wit-id {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--accent);
+        font-variant-numeric: oldstyle-nums;
+        min-width: 36px;
+      }
+      .wit-name {
+        font-family: "Source Serif 4", serif;
+        font-size: 1.05rem;
+      }
+
+      /* ── FILTRI APPARATO ── */
+      .filter-bar {
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border);
+        background: #fafaf8;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+      }
+      .filter-bar label {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        margin-right: 4px;
+      }
+      .filter-chip {
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1.5px solid var(--border);
+        background: white;
+        color: var(--muted);
+        transition: all 0.15s;
+        font-family: "Source Sans 3", sans-serif;
+      }
+      .filter-chip.on {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--accent-light);
+      }
+      .filter-divider {
+        width: 1px;
+        height: 18px;
+        background: var(--border);
+        margin: 0 4px;
+      }
+
+      /* ── FACSIMILE ── */
+      .fac-wrapper {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      .fac-toolbar {
+        padding: 8px 14px;
+        border-bottom: 1px solid var(--border);
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .fac-viewer {
+        flex: 1;
+        overflow: hidden;
+        cursor: grab;
+        background: #e8e6e0;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .fac-viewer:active {
+        cursor: grabbing;
+      }
+      .fac-viewport {
+        position: absolute;
+        transform-origin: center center;
+        transition: transform 0.08s ease-out;
+      }
+      .fac-img {
+        height: 85vh;
+        max-width: none;
+        pointer-events: none;
+        display: block;
+        border-radius: 3px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+      }
+
+      .fac-btn {
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: white;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .fac-btn .material-symbols-outlined {
+        font-size: 16px;
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 300,
+          "GRAD" 0,
+          "opsz" 20;
+      }
+      .fac-btn:hover:not(:disabled) {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .fac-btn:disabled {
+        opacity: 0.3;
+        cursor: default;
+      }
+
+      .fac-select {
+        font-family: "Source Sans 3", sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 5px 8px;
+        border-radius: 5px;
+        border: 1.5px solid var(--border);
+        background: white;
+        color: var(--text);
+        cursor: pointer;
+      }
+      .page-indicator {
+        font-family: "Source Sans 3", sans-serif;
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--accent);
+        min-width: 52px;
+        text-align: center;
+      }
+
+      /* ── HEADER ── */
+      header {
+        border-bottom: 1px solid var(--border);
+        background: rgba(251, 249, 244, 0.97);
+        backdrop-filter: blur(8px);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+      }
+      .header-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 24px;
+      }
+      .header-author {
+        font-weight: 500;
+        font-size: 1rem;
+        letter-spacing: -0.01em;
+      }
+      .header-title {
+        font-family: "Source Serif 4", serif;
+        font-style: italic;
+        color: var(--accent);
+        font-size: 0.95rem;
+      }
+      .header-status {
+        font-size: 9px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #aaa;
+      }
+
+      /* ── TRADUZIONE ── */
+      .tei-translation .tei-l {
+        font-style: italic;
+        color: #4b5563;
+      }
+
+      /* section col */
+      section.col {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: white;
+      }
+
+      /* ── MISC ── */
+      .sep {
+        height: 1px;
+        background: var(--border);
+        margin: 8px 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ═══════════════════════════════════ HEADER ═══════════════════════════════════ -->
+    <header>
+      <div class="header-inner">
+        <div
+          id="header-meta"
+          style="display: flex; gap: 16px; align-items: baseline"
+        >
+          <span style="color: #aaa; font-size: 13px">Caricamento…</span>
+        </div>
+        <span id="loading-status" class="header-status"></span>
+      </div>
+    </header>
+
+    <!-- ═══════════════════════════════════ BODY ═══════════════════════════════════ -->
+    <div
+      style="display: flex; height: calc(100vh - 53px); overflow: hidden"
+      id="main-body"
+      class="layout-single"
+    >
+      <!-- SIDEBAR -->
+      <aside>
+        <div style="padding: 20px 20px 14px">
+          <div
+            style="
+              font-size: 9px;
+              font-weight: 800;
+              text-transform: uppercase;
+              letter-spacing: 0.15em;
+              color: var(--muted);
+            "
+          >
+            Edizione Digitale
+          </div>
+        </div>
+        <nav id="sidebar-nav" style="flex: 1; padding: 4px 0"></nav>
+        <div class="sep"></div>
+        <div style="padding: 14px 20px">
+          <div
+            id="resp-info"
+            style="
+              font-size: 9px;
+              color: #bbb;
+              text-transform: uppercase;
+              letter-spacing: 0.1em;
+              font-weight: 700;
+              line-height: 1.6;
+            "
+          ></div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main style="flex: 1; display: flex; overflow: hidden">
+        <!-- COL LEFT -->
+        <section
+          class="col"
+          id="col-left"
+          style="flex: 1; border-right: 1px solid var(--border)"
+        >
+          <div class="tab-bar hidden" id="tabs-L"></div>
+          <div class="scroll-pane" id="scroll-L">
+            <!-- front-matter views (single col) -->
+            <div id="view-introduction" class="prose hidden"></div>
+            <div id="view-editorialNote" class="prose hidden"></div>
+            <div id="view-criteria" class="prose hidden"></div>
+            <div id="view-witnesses" class="prose hidden"></div>
+            <div id="view-bibliography" class="prose hidden"></div>
+            <!-- edition panes -->
+            <div
+              id="panes-L"
+              class="hidden"
+              style="height: 100%; display: flex; flex-direction: column"
+            >
+              <div id="app-filters-L" class="hidden"></div>
+              <div
+                style="flex: 1; overflow-y: auto"
+                class="scroll-pane"
+                id="inner-scroll-L"
+              >
+                <div id="out-testo-L" class="tei-content hidden"></div>
+                <div
+                  id="out-facsimile-L"
+                  class="hidden"
+                  style="height: 100%"
+                ></div>
+                <div
+                  id="out-traduzione-L"
+                  class="tei-content tei-translation hidden"
+                ></div>
+                <div id="out-apparato-L" class="hidden"></div>
+                <div id="out-commento-L" class="hidden"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- COL RIGHT -->
+        <section class="col" id="col-right" style="flex: 1; display: none">
+          <div class="tab-bar" id="tabs-R"></div>
+          <div
+            class="scroll-pane"
+            id="scroll-R"
+            style="flex: 1; display: flex; flex-direction: column"
+          >
+            <div id="app-filters-R" class="hidden"></div>
+            <div
+              style="flex: 1; overflow-y: auto"
+              class="scroll-pane"
+              id="inner-scroll-R"
+            >
+              <div id="out-testo-R" class="tei-content hidden"></div>
+              <div
+                id="out-facsimile-R"
+                class="hidden"
+                style="height: 100%"
+              ></div>
+              <div
+                id="out-traduzione-R"
+                class="tei-content tei-translation hidden"
+              ></div>
+              <div id="out-apparato-R" class="hidden"></div>
+              <div id="out-commento-R" class="hidden"></div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ═══════════════════════════════════ SCRIPT ═══════════════════════════════════ -->
+    <script>
+      /* ──────────────────────────────────────────────────────────────
+   CONFIGURAZIONE
+────────────────────────────────────────────────────────────── */
+      const TEI_FILE = "vers.xml";
+      const NS = "http://www.tei-c.org/ns/1.0";
+
+      let xml = null;
+
+      // State
+      const facState = {
+        L: {
+          zoom: 1,
+          x: 0,
+          y: 0,
+          dragging: false,
+          mx: 0,
+          my: 0,
+          witId: null,
+          pages: [],
+          pageIdx: 0,
+        },
+        R: {
+          zoom: 1,
+          x: 0,
+          y: 0,
+          dragging: false,
+          mx: 0,
+          my: 0,
+          witId: null,
+          pages: [],
+          pageIdx: 0,
+        },
+      };
+
+      // Which pane is active per column
+      const activePaneId = { L: "testo", R: "apparato" };
+
+      // Active witness filter sets per column
+      const witnessFilter = { L: new Set(), R: new Set() };
+      // Variant type filter
+      const variantFilter = {
+        L: new Set(["substantive", "orthographic"]),
+        R: new Set(["substantive", "orthographic"]),
+      };
+
+      // Note counter map: segId -> noteIndex
+      let noteIndexMap = {};
+      let appEntryData = []; // [{id, lineN, lemText, isConj, rdgs:[{wit,text,type}]}]
+      let commentData = []; // [{target, text}]
+      let witnesses = []; // [{id, text}]
+      let allWitIds = [];
+
+      // Available pane ids (discovered from XML)
+      let availablePanes = [];
+
+      /* ──────────────────────────────────────────────────────────────
+   BOOT
+────────────────────────────────────────────────────────────── */
+      document.addEventListener("DOMContentLoaded", async () => {
+        const status = document.getElementById("loading-status");
+        status.textContent = "Caricamento…";
+        try {
+          const r = await fetch(TEI_FILE);
+          if (!r.ok) throw new Error(r.status);
+          xml = new DOMParser().parseFromString(
+            await r.text(),
+            "application/xml",
+          );
+          buildAll();
+          status.textContent = "Laboratorio di Filologia romanza digitale";
+        } catch (e) {
+          status.textContent = "Errore XML";
+          console.error(e);
+        }
+      });
+
+      /* ──────────────────────────────────────────────────────────────
+   BUILD ALL
+────────────────────────────────────────────────────────────── */
+      function buildAll() {
+        buildHeader();
+        buildWitnesses();
+        buildFrontMatter();
+        buildEditionData();
+        buildSidebar();
+        buildFacsimile();
+
+        // Default view
+        selectView("introduction");
+      }
+
+      /* ──────────────────────────────────────────────────────────────
+   HEADER
+────────────────────────────────────────────────────────────── */
+      function buildHeader() {
+        const author =
+          xml.getElementsByTagNameNS(NS, "author")[0]?.textContent?.trim() ||
+          "";
+        const title =
+          xml.getElementsByTagNameNS(NS, "title")[0]?.textContent?.trim() || "";
+        const resp =
+          xml.getElementsByTagNameNS(NS, "name")[0]?.textContent?.trim() || "";
+        document.getElementById("header-meta").innerHTML = `
+    <span class="header-author">${author}</span>
+    <span class="header-title">${title}</span>`;
+        if (resp)
+          document.getElementById("resp-info").textContent =
+            `Ed. digitale a cura di ${resp}`;
+      }
+
+      /* ──────────────────────────────────────────────────────────────
+   WITNESSES
+────────────────────────────────────────────────────────────── */
+      function buildWitnesses() {
+        witnesses = Array.from(xml.getElementsByTagNameNS(NS, "witness")).map(
+          (w) => ({
+            id: w.getAttribute("xml:id"),
+            text: w.textContent.trim(),
+          }),
+        );
+        allWitIds = witnesses.map((w) => w.id);
+        // Init filters to all on
+        ["L", "R"].forEach((c) => {
+          witnessFilter[c] = new Set(allWitIds);
+        });
+
+        // Render witness list view
+        let h = '<h1>Lista dei Testimoni</h1><div style="margin-top:2rem">';
+        witnesses.forEach((w) => {
+          h += `<div class="wit-entry"><span class="wit-id">${w.id}</span><span class="wit-name">${w.text}</span></div>`;
+        });
+        h += "</div>";
+        document.getElementById("view-witnesses").innerHTML = h;
+      }
+
+      /* ──────────────────────────────────────────────────────────────
+   FRONT MATTER
+────────────────────────────────────────────────────────────── */
+      function buildFrontMatter() {
+        const divs = Array.from(xml.getElementsByTagNameNS(NS, "div"));
+        const types = ["introduction", "editorialNote", "criteria"];
+        types.forEach((t) => {
+          const d = divs.find((x) => x.getAttribute("type") === t);
+          const el = document.getElementById("view-" + t);
+          if (!el) return;
+          if (d) {
+            el.innerHTML =
+              "<h1>" +
+              (d.getElementsByTagNameNS(NS, "head")[0]?.textContent ||
+                labels[t] ||
+                t) +
+              "</h1>" +
+              formatTEIDiv(d);
+          }
+        });
+
+        // Bibliography
+        const listBibl = xml.getElementsByTagNameNS(NS, "listBibl")[0];
+        const biblEl = document.getElementById("view-bibliography");
+        if (listBibl) {
+          let h = '<h1>Bibliografia</h1><div style="margin-top:1.5rem">';
+          Array.from(listBibl.getElementsByTagNameNS(NS, "bibl")).forEach(
+            (b) => {
+              h += `<p style="font-family:\'Source Serif 4\',serif;font-size:1rem;line-height:1.8;margin-bottom:0.6rem">${b.textContent.trim()}</p>`;
+            },
+          );
+          h += "</div>";
+          biblEl.innerHTML = h;
+        } else {
+          biblEl.innerHTML =
+            '<h1>Bibliografia</h1><p style="color:#aaa;font-style:italic">Nessun dato bibliografico nell\'XML.</p>';
+        }
+      }
+
+      const labels = {
+        introduction: "Introduzione",
+        editorialNote: "Nota al Testo",
+        criteria: "Criteri Editoriali",
+        witnesses: "Lista Testimoni",
+        bibliography: "Bibliografia",
+      };
+
+      function formatTEIDiv(node) {
+        let h = "";
+        node.childNodes.forEach((c) => {
+          if (c.localName === "p") h += `<p>${smartQuotes(c.innerHTML)}</p>`;
+          if (c.localName === "head") return;
+          if (c.nodeType === 3 && c.textContent.trim())
+            h += `<p>${smartQuotes(c.textContent)}</p>`;
+        });
+        return h;
+      }
+
+      /* ──────────────────────────────────────────────────────────────
+   SIDEBAR
+────────────────────────────────────────────────────────────── */
+      const sidebarItems = [
+        {
+          id: "introduction",
+          icon: "info",
+          label: "Introduzione",
+          key: 'div[type="introduction"]',
+        },
+        {
+          id: "editorialNote",
+          icon: "manage_search",
+          label: "Nota al Testo",
+          key: 'div[type="editorialNote"]',
+        },
+        {
+          id: "criteria",
+          icon: "book",
+          label: "Nota Critica",
+          key: 'div[type="criteria"]',
+        },
+        {
+          id: "witnesses",
+          icon: "local_library",
+          label: "Testimoni",
+          always: true,
+        },
+        { separator: true },
+        {
+          id: "edition",
+          icon: "auto_stories",
+          label: "Edizione",
+          always: true,
+        },
+        {
+          id: "bibliography",
+          icon: "article",
+          label: "Bibliografia",
+          key: "listBibl",
+        },
+      ];
+
+      function buildSidebar() {
+        const nav = document.getElementById("sidebar-nav");
+        let h = "";
+        sidebarItems.forEach((item) => {
+          if (item.separator) {
+            h += '<div class="sep"></div>';
+            return;
+          }
+          // Visibility: always show, or if element found in XML
+          if (!item.always && item.key) {
+            const found = item.key.startsWith("div[")
+              ? Array.from(xml.getElementsByTagNameNS(NS, "div")).some(
+                  (d) =>
+                    d.getAttribute("type") ===
+                    item.key.match(/type="(\w+)"/)[1],
+                )
+              : xml.getElementsByTagNameNS(NS, item.key)?.length > 0;
+            if (!found) return;
+          }
+          h += `<button class="nav-btn" id="nav-${item.id}" onclick="selectView('${item.id}')">
+      <span class="material-symbols-outlined">${item.icon}</span>${item.label}
+    </button>`;
+        });
+        nav.innerHTML = h;
+      }
+
+      /* ──────────────────────────────────────────────────────────────
+   VIEW SWITCHING
+────────────────────────────────────────────────────────────── */
+      function selectView(viewId) {
+        // Update sidebar
+        document
+          .querySelectorAll(".nav-btn")
+          .forEach((b) => b.classList.remove("active"));
+        const nb = document.getElementById("nav-" + viewId);
+        if (nb) nb.classList.add("active");
+
+        const body = document.getElementById("main-body");
+        const scroll = document.getElementById("scroll-L");
+
+        if (viewId === "edition") {
+          body.classList.replace("layout-single", "layout-dual");
+          // Show tab bars
+          document.getElementById("tabs-L").classList.remove("hidden");
+          document.getElementById("tabs-R").classList.remove("hidden");
+          // Hide front-matter
+          hideFrontMatter();
+          // Show edition panes container
+          document.getElementById("panes-L").classList.remove("hidden");
+          scroll.style.overflow = "hidden";
+          scroll.style.height = "100%";
+          // Default panes
+          switchPane("L", activePaneId.L);
+          switchPane("R", activePaneId.R);
+        } else {
+          body.classList.replace("layout-dual", "layout-single");
+          document.getElementById("tabs-L").classList.add("hidden");
+          document.getElementById("panes-L").classList.add("hidden");
+          scroll.style.overflow = "";
+          scroll.style.height = "";
+          hideFrontMatter();
+          const v = document.getElementById("view-" + viewId);
+          if (v) v.classList.remove("hidden");
+        }
+      }
+
+      function hideFrontMatter() {
+        [
+          "introduction",
+          "editorialNote",
+          "criteria",
+          "witnesses",
+          "bibliography",
+        ].forEach((id) => {
+          document.getElementById("view-" + id)?.classList.add("hidden");
+        });
+      }
+
+      /* ──────────────────────────────────────────────────────────────
+   EDITION DATA
+────────────────────────────────────────────────────────────── */
+      function buildEditionData() {
+        const edition = Array.from(xml.getElementsByTagNameNS(NS, "div")).find(
+          (d) => d.getAttribute("type") === "edition",
+        );
+        if (!edition) return;
+
+        // Discover panes
+        availablePanes = ["testo"];
+        if (xml.getElementsByTagNameNS(NS, "surface").length > 0)
+          availablePanes.push("facsimile");
+        if (
+          Array.from(xml.getElementsByTagNameNS(NS, "div")).some(
+            (d) => d.getAttribute("type") === "translation",
+          )
+        )
+          availablePanes.push("traduzione");
+        if (edition.getElementsByTagNameNS(NS, "app").length > 0)
+          availablePanes.push("apparato");
+        if (
+          edition.getElementsByTagNameNS(NS, "note").length > 0 ||
+          edition.getElementsByTagNameNS(NS, "seg").length > 0
+        )
+          availablePanes.push("commento");
+
+        // Build tabs
+        buildTabs();
+
+        // Parse notes
+        commentData = Array.from(
+          edition.getElementsByTagNameNS(NS, "note"),
+        ).map((n) => ({
+          target: n.getAttribute("target")?.replace("#", "") || "",
+          text: n.innerHTML,
+        }));
+
+        // Assign note indices in document order.
+        // Walk the edition in DOM order: for each <seg> and for each <app> that has
+        // a matching <note>, assign a progressive index.
+        let noteIdx = 1;
+        noteIndexMap = {};
+        const noteTargets = new Set(commentData.map((nd) => nd.target));
+
+        // Collect all annotated anchors in document order
+        const walker = document.createTreeWalker
+          ? null // we'll use a manual recursive walk on the XML instead
+          : null;
+
+        function walkForNoteAnchors(node) {
+          if (node.nodeType === 1) {
+            const localName = node.localName;
+            const id = node.getAttribute("xml:id");
+            if (
+              (localName === "seg" || localName === "app") &&
+              id &&
+              noteTargets.has(id)
+            ) {
+              if (!noteIndexMap[id]) noteIndexMap[id] = noteIdx++;
+            }
+            Array.from(node.childNodes).forEach(walkForNoteAnchors);
+          }
+        }
+        walkForNoteAnchors(edition);
+
+        // Parse app entries
+        appEntryData = Array.from(
+          edition.getElementsByTagNameNS(NS, "app"),
+        ).map((app) => {
+          const id = app.getAttribute("xml:id");
+          const lemEl = app.getElementsByTagNameNS(NS, "lem")[0];
+          const isConj = lemEl?.getAttribute("type") === "conjecture";
+          const lemText = lemEl?.textContent?.trim() || "";
+          // Find parent line n
+          let parent = app.parentNode;
+          while (parent && parent.localName !== "l") parent = parent.parentNode;
+          const lineN = parent?.getAttribute("n") || "";
+
+          const rdgs = Array.from(app.getElementsByTagNameNS(NS, "rdg")).map(
+            (r) => ({
+              wit: r.getAttribute("wit") || "",
+              text: r.textContent.trim(),
+              type: r.getAttribute("type") || "substantive",
+            }),
+          );
+          return { id, lineN, lemText, isConj, rdgs };
+        });
+
+        // Render text
+        let textHtml = "";
+        Array.from(edition.getElementsByTagNameNS(NS, "lg")).forEach((lg) => {
+          textHtml += '<div class="tei-lg">';
+          Array.from(lg.getElementsByTagNameNS(NS, "l")).forEach((l) => {
+            const n = l.getAttribute("n");
+            textHtml += `<div class="tei-l"><span class="line-n">${n}</span>${walkLine(l)}</div>`;
+          });
+          textHtml += "</div>";
+        });
+
+        ["L", "R"].forEach((c) => {
+          document.getElementById(`out-testo-${c}`).innerHTML = textHtml;
+        });
+
+        // Render apparatus (will be re-rendered on filter change)
+        renderApparatus("L");
+        renderApparatus("R");
+
+        // Render commento
+        renderCommento("L");
+        renderCommento("R");
+
+        // Render traduzione
+        buildTranslation();
+
+        // Build filter bars
+        buildFilterBars();
+
+        // Bind text interactions
+        bindTextEvents();
+      }
+
+      /* ──────────────────────────────────────────────────────────────
+   SMART QUOTES
+────────────────────────────────────────────────────────────── */
+function smartQuotes(str) {
+  if (!str) return str;
+  return str
+    // 1. Virgolette doppie: " che apre (aggiunta la chiusura della tonda dopo [^"])
+    .replace(/(^|[\s(\[{>«])"([^"])/g, '$1\u201C$2')
+    // 2. Virgolette doppie: " che chiude
+    .replace(/"([\s.,;:!?)\]}>»]|$)/g, '\u201D$1')
+    // 3. Apostrofo interno a parola (dell', l'uomo, ecc.)
+    .replace(/(\w)'(\w)/g, '$1\u2019$2')
+    // 4. Apostrofo iniziale elisione ('l → l')
+    .replace(/(^|[\s])'(\w)/g, '$1\u2018$2')
+    // 5. Apostrofo residuo → chiusura
+    .replace(/'/g, '\u2019');
+}
+
+      function walkLine(l) {
+        let out = "";
+        l.childNodes.forEach((node) => {
+          if (node.nodeType === 3) {
+            out += smartQuotes(node.textContent);
+            return;
+          }
+          if (node.nodeType !== 1) return;
+          if (node.localName === "app") {
+            const id = node.getAttribute("xml:id");
+            const lemEl = node.getElementsByTagNameNS(NS, "lem")[0];
+            const isConj = lemEl?.getAttribute("type") === "conjecture";
+            const lemText = lemEl?.textContent?.trim() || "";
+            const ni = noteIndexMap[id] || ""; // note marker if this app has a note
+            const marker = ni
+              ? `<sup class="note-marker" data-seg-id="${id}">${ni}</sup>`
+              : "";
+            out += `<span class="tei-app${isConj ? " conjecture" : ""}" data-app-id="${id}">${lemText}</span>${marker}`;
+          } else if (node.localName === "seg") {
+            const sid = node.getAttribute("xml:id");
+            const ni = noteIndexMap[sid] || "";
+            out += `<span class="tei-seg" data-seg-id="${sid}">${node.textContent}<sup class="note-marker" data-seg-id="${sid}">${ni}</sup></span>`;
+          } else {
+            out += node.textContent;
+          }
+        });
+        return out;
+      }
+
+      /* ──────────────────────────────────────────────────────────────
+   TABS
+────────────────────────────────────────────────────────────── */
+      const paneLabels = {
+        testo: "Testo Critico",
+        facsimile: "Facsimile",
+        traduzione: "Traduzione",
+        apparato: "Apparato",
+        commento: "Commento",
+      };
+
+      function buildTabs() {
+        ["L", "R"].forEach((c) => {
+          const bar = document.getElementById("tabs-" + c);
+          let h = "";
+          availablePanes.forEach((p) => {
+            h += `<button class="tab" data-pane="${p}" data-col="${c}" onclick="switchPane('${c}','${p}')">${paneLabels[p]}</button>`;
+          });
+          bar.innerHTML = h;
+        });
+      }
+
+      function switchPane(col, paneId) {
+        activePaneId[col] = paneId;
+        // Update tabs
+        document.querySelectorAll(`[data-col="${col}"].tab`).forEach((t) => {
+          t.classList.toggle("active", t.dataset.pane === paneId);
+        });
+        // Show/hide panes
+        const paneIds = [
+          "testo",
+          "facsimile",
+          "traduzione",
+          "apparato",
+          "commento",
+        ];
+        paneIds.forEach((p) => {
+          const el = document.getElementById(`out-${p}-${col}`);
+          if (el) el.classList.toggle("hidden", p !== paneId);
+        });
+        // Show/hide filter bar
+        const fb = document.getElementById(`app-filters-${col}`);
+        if (fb) fb.classList.toggle("hidden", paneId !== "apparato");
+        // Facsimile init
+        if (paneId === "facsimile") initFacsimileDisplay(col);
+      }
+
+      /* ──────────────────────────────────────────────────────────────
+   APPARATUS
+────────────────────────────────────────────────────────────── */
+      function renderApparatus(col) {
+        const wf = witnessFilter[col];
+        const vf = variantFilter[col];
+        let h = "";
+
+        appEntryData.forEach((entry) => {
+          // Build visible rdgs
+          const visRdgs = entry.rdgs.filter((r) => {
+            if (!vf.has(r.type)) return false;
+            // Filter by witness
+            const wits = r.wit
+              .trim()
+              .split(/\s+/)
+              .map((w) => w.replace("#", ""));
+            return wits.some((w) => wf.has(w) || w === "");
+          });
+
+          // Apparato negativo: skip entries with no rdgs different from lem
+          // (rdg empty = om., still shown if witnesses visible)
+          if (visRdgs.length === 0) return;
+
+          // Format lem
+          const lemDisp = entry.isConj ? `⟨${entry.lemText}⟩` : entry.lemText;
+          // Format rdgs
+          let rdgParts = [];
+          visRdgs.forEach((r) => {
+            const wits = r.wit
+              .trim()
+              .split(/\s+/)
+              .map((w) => w.replace("#", ""))
+              .filter((w) => wf.has(w));
+            if (wits.length === 0) return;
+            const witStr = wits.join(", ");
+            if (!r.text) {
+              rdgParts.push(
+                `<span style="font-style:normal">om.</span> <span class="wit-sig">${witStr}</span>`,
+              );
+            } else {
+              rdgParts.push(
+                `<span class="rdg-text">${r.text}</span> <span class="wit-sig">${witStr}</span>`,
+              );
+            }
+          });
+
+          if (rdgParts.length === 0) return;
+
+          h += `<div class="app-entry" data-app-id="${entry.id}">
+      <span class="line-ref">${entry.lineN}</span>
+      <span class="lem-text">${lemDisp}</span>]
+      ${rdgParts.join("; ")}
+    </div>`;
+        });
+
+        if (!h)
+          h =
+            '<div style="padding:20px;color:#aaa;font-size:13px;font-style:italic">Nessuna variante da mostrare.</div>';
+        document.getElementById(`out-apparato-${col}`).innerHTML = h;
+        // Rebind
+        document
+          .querySelectorAll(`#out-apparato-${col} .app-entry`)
+          .forEach((el) => {
+            el.addEventListener("click", () => {
+              // Clicked from apparatus: scroll the lem in the OTHER col
+              const appId = el.dataset.appId;
+              document
+                .querySelectorAll(".tei-app.hl, .app-entry.hl")
+                .forEach((e) => e.classList.remove("hl"));
+              document
+                .querySelectorAll(`.tei-app[data-app-id="${appId}"]`)
+                .forEach((e) => e.classList.add("hl"));
+              el.classList.add("hl");
+              const tgtCol = otherCol(col);
+              const span = document.querySelector(
+                `#out-testo-${tgtCol} .tei-app[data-app-id="${appId}"]`,
+              );
+              if (span) {
+                if (span) {
+                  ensurePaneVisible(tgtCol, "testo");
+                  setTimeout(
+                    () =>
+                      span.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center",
+                      }),
+                    120,
+                  );
+                }
+              }
+            });
+          });
+      }
+
+      /* ──────────────────────────────────────────────────────────────
+   COMMENTO
+────────────────────────────────────────────────────────────── */
+      function renderCommento(col) {
+        let h = "";
+        commentData.forEach((nd) => {
+          const ni = noteIndexMap[nd.target] || "";
+          h += `<div class="note-entry" id="note-${col}-${nd.target}" data-note-target="${nd.target}">
+      <div class="note-marker-label"><sup>${ni}</sup> Nota di commento</div>
+      <div style="font-family:'Source Serif 4',serif;font-size:0.97rem;line-height:1.75">${nd.text}</div>
+    </div>`;
+        });
+        if (!h)
+          h =
+            '<div style="padding:20px;color:#aaa;font-size:13px;font-style:italic">Nessuna nota di commento.</div>';
+        document.getElementById(`out-commento-${col}`).innerHTML = h;
+        // Bind note → hl in text
+        document
+          .querySelectorAll(`#out-commento-${col} .note-entry`)
+          .forEach((el) => {
+            el.addEventListener("click", () => {
+              const segId = el.dataset.noteTarget;
+              document
+                .querySelectorAll(
+                  ".note-marker.hl, .tei-seg.hl, .note-entry.hl",
+                )
+                .forEach((e) => e.classList.remove("hl"));
+              document
+                .querySelectorAll(`.note-marker[data-seg-id="${segId}"]`)
+                .forEach((e) => e.classList.add("hl"));
+              document
+                .querySelectorAll(`.tei-seg[data-seg-id="${segId}"]`)
+                .forEach((e) => e.classList.add("hl"));
+              el.classList.add("hl");
+              const tgtCol = otherCol(col);
+              const marker = document.querySelector(
+                `#out-testo-${tgtCol} .note-marker[data-seg-id="${segId}"]`,
+              );
+              if (marker) {
+                ensurePaneVisible(tgtCol, "testo");
+                setTimeout(
+                  () =>
+                    marker.scrollIntoView({
+                      behavior: "smooth",
+                      block: "center",
+                    }),
+                  120,
+                );
+              }
+            });
+          });
+      }
+
+      /* ──────────────────────────────────────────────────────────────
+   TRADUZIONE
+────────────────────────────────────────────────────────────── */
+      function buildTranslation() {
+        const trans = Array.from(xml.getElementsByTagNameNS(NS, "div")).find(
+          (d) => d.getAttribute("type") === "translation",
+        );
+        if (!trans) return;
+        let h = "";
+        Array.from(trans.getElementsByTagNameNS(NS, "l")).forEach((l) => {
+          h += `<div class="tei-l"><span class="line-n">${l.getAttribute("n")}</span>${smartQuotes(l.textContent)}</div>`;
+        });
+        document.getElementById("out-traduzione-L").innerHTML = h;
+        document.getElementById("out-traduzione-R").innerHTML = h;
+      }
+
+      /* ──────────────────────────────────────────────────────────────
+   FILTER BARS
+────────────────────────────────────────────────────────────── */
+      function buildFilterBars() {
+        ["L", "R"].forEach((col) => {
+          const fb = document.getElementById(`app-filters-${col}`);
+          // Witness chips
+          let h = '<div class="filter-bar">';
+          h += "<label>Testimoni</label>";
+          allWitIds.forEach((wid) => {
+            h += `<button class="filter-chip on" data-col="${col}" data-wit="${wid}" onclick="toggleWit('${col}','${wid}',this)">${wid}</button>`;
+          });
+          h += '<div class="filter-divider"></div>';
+          h += "<label>Varianti</label>";
+          h += `<button class="filter-chip on" data-col="${col}" data-vtype="substantive"   onclick="toggleVType('${col}','substantive',this)">Sostanziali</button>`;
+          h += `<button class="filter-chip on" data-col="${col}" data-vtype="orthographic"  onclick="toggleVType('${col}','orthographic',this)">Ortografiche</button>`;
+          h += "</div>";
+          fb.innerHTML = h;
+        });
+      }
+
+      function toggleWit(col, witId, btn) {
+        if (witnessFilter[col].has(witId)) witnessFilter[col].delete(witId);
+        else witnessFilter[col].add(witId);
+        btn.classList.toggle("on", witnessFilter[col].has(witId));
+        renderApparatus(col);
+      }
+
+      function toggleVType(col, vtype, btn) {
+        if (variantFilter[col].has(vtype)) variantFilter[col].delete(vtype);
+        else variantFilter[col].add(vtype);
+        btn.classList.toggle("on", variantFilter[col].has(vtype));
+        renderApparatus(col);
+      }
+
+      /* ──────────────────────────────────────────────────────────────
+   TEXT INTERACTIONS
+────────────────────────────────────────────────────────────── */
+      /* ──────────────────────────────────────────────────────────────
+   UTILITY: which column does a DOM element belong to?
+────────────────────────────────────────────────────────────── */
+      function colOf(el) {
+        if (el.closest("#col-left")) return "L";
+        if (el.closest("#col-right")) return "R";
+        return null;
+      }
+      function otherCol(col) {
+        return col === "L" ? "R" : "L";
+      }
+
+      function bindTextEvents() {
+        document.body.addEventListener("click", (e) => {
+          // App span in text → open rdg in the OTHER column
+          const appSpan = e.target.closest(".tei-app");
+          if (appSpan) {
+            const srcCol = colOf(appSpan);
+            highlightApp(appSpan.dataset.appId, srcCol);
+            return;
+          }
+
+          // Note marker / seg → open note in the OTHER column
+          const marker = e.target.closest(".note-marker, .tei-seg");
+          if (marker) {
+            const sid = marker.dataset.segId;
+            if (sid) {
+              const srcCol = colOf(marker);
+              highlightNote(sid, srcCol);
+              return;
+            }
+          }
+
+          // Clic su area neutra: rimuovi tutte le evidenziazioni
+          if (!e.target.closest(".app-entry, .note-entry")) {
+            document
+              .querySelectorAll(
+                ".tei-app.hl, .app-entry.hl, .note-marker.hl, .tei-seg.hl, .note-entry.hl",
+              )
+              .forEach((el) => el.classList.remove("hl"));
+          }
+        });
+      }
+
+      /*
+  highlightApp(appId, srcCol)
+    srcCol = column where the click originated ('L', 'R', or null if from apparatus)
+  Logic:
+    - If clicked from text (srcCol known): highlight lem in ALL text panels, open rdg
+      in the opposite column's apparatus. The source column pane is NOT changed.
+    - If clicked from apparatus (srcCol=null): highlight lem in text panels of ALL
+      columns that are currently showing testo; scroll to it. Do not change those panes.
+*/
+      function highlightApp(appId, srcCol) {
+        document
+          .querySelectorAll(".tei-app.hl, .app-entry.hl")
+          .forEach((el) => el.classList.remove("hl"));
+
+        // Always highlight lem spans everywhere (visual feedback only, no pane switch)
+        document
+          .querySelectorAll(`.tei-app[data-app-id="${appId}"]`)
+          .forEach((el) => el.classList.add("hl"));
+
+        if (srcCol) {
+          // Clicked from text: open apparatus in the OTHER column
+          const tgtCol = otherCol(srcCol);
+          ensurePaneVisible(tgtCol, "apparato");
+          const entry = document.querySelector(
+            `#out-apparato-${tgtCol} [data-app-id="${appId}"]`,
+          );
+          if (entry) {
+            entry.classList.add("hl");
+            setTimeout(
+              () =>
+                entry.scrollIntoView({ behavior: "smooth", block: "center" }),
+              120,
+            );
+          }
+          // Also highlight (but don't switch) apparatus in the source column if it's already open
+          const entrySrc = document.querySelector(
+            `#out-apparato-${srcCol} [data-app-id="${appId}"]`,
+          );
+          if (entrySrc) entrySrc.classList.add("hl");
+        } else {
+          // Clicked from apparatus: determine which column the apparatus lives in,
+          // then scroll/highlight the lem in the OTHER column's testo
+          // (caller passes srcCol=null; we detect via the clicked element stored in lastAppClick)
+          ["L", "R"].forEach((col) => {
+            const span = document.querySelector(
+              `#out-testo-${col} .tei-app[data-app-id="${appId}"]`,
+            );
+            if (!span) return;
+            if (activePaneId[col] === "testo") {
+              setTimeout(
+                () =>
+                  span.scrollIntoView({ behavior: "smooth", block: "center" }),
+                120,
+              );
+            }
+          });
+        }
+      }
+
+      /*
+  highlightNote(segId, srcCol)
+    srcCol = column of the clicked marker/seg, or null if click came from a note-entry
+*/
+      function highlightNote(segId, srcCol) {
+        document
+          .querySelectorAll(".note-marker.hl, .tei-seg.hl, .note-entry.hl")
+          .forEach((el) => el.classList.remove("hl"));
+
+        // Highlight all markers and segs everywhere (visual only)
+        document
+          .querySelectorAll(`.note-marker[data-seg-id="${segId}"]`)
+          .forEach((el) => el.classList.add("hl"));
+        document
+          .querySelectorAll(`.tei-seg[data-seg-id="${segId}"]`)
+          .forEach((el) => el.classList.add("hl"));
+
+        if (srcCol) {
+          // Clicked from text: open commento in the OTHER column
+          const tgtCol = otherCol(srcCol);
+          ensurePaneVisible(tgtCol, "commento");
+          const ne = document.getElementById(`note-${tgtCol}-${segId}`);
+          if (ne) {
+            ne.classList.add("hl");
+            setTimeout(
+              () => ne.scrollIntoView({ behavior: "smooth", block: "center" }),
+              120,
+            );
+          }
+          // Also highlight (don't switch) note in source column if commento already open
+          const neSrc = document.getElementById(`note-${srcCol}-${segId}`);
+          if (neSrc) neSrc.classList.add("hl");
+        } else {
+          // Clicked from note panel: scroll to marker in the other column's testo
+          ["L", "R"].forEach((col) => {
+            const marker = document.querySelector(
+              `#out-testo-${col} .note-marker[data-seg-id="${segId}"]`,
+            );
+            if (!marker) return;
+            if (activePaneId[col] === "testo") {
+              setTimeout(
+                () =>
+                  marker.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                  }),
+                120,
+              );
+            }
+          });
+        }
+      }
+
+      function ensurePaneVisible(col, paneId) {
+        if (
+          document
+            .getElementById("main-body")
+            .classList.contains("layout-single")
+        ) {
+          selectView("edition");
+        }
+        if (activePaneId[col] !== paneId) {
+          switchPane(col, paneId);
+        }
+      }
+
+      /* ──────────────────────────────────────────────────────────────
+   FACSIMILE
+────────────────────────────────────────────────────────────── */
+      function buildFacsimile() {
+        const surfaces = Array.from(xml.getElementsByTagNameNS(NS, "surface"));
+        if (surfaces.length === 0) return;
+
+        ["L", "R"].forEach((col) => {
+          const container = document.getElementById(`out-facsimile-${col}`);
+          let h = `<div class="fac-wrapper">
+      <div class="fac-toolbar">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted)">Testimone</span>
+          <select class="fac-select" id="fac-wit-${col}" onchange="facWitChange('${col}',this.value)">
+            ${witnesses.map((w) => `<option value="${w.id}">${w.id} – ${w.text}</option>`).join("")}
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <button class="fac-btn" onclick="facZoom('${col}',1.2)" title="Zoom +"><span class="material-symbols-outlined">zoom_in</span></button>
+          <button class="fac-btn" onclick="facZoom('${col}',0.8)" title="Zoom -"><span class="material-symbols-outlined">zoom_out</span></button>
+          <button class="fac-btn" onclick="facReset('${col}')" title="Reset"><span class="material-symbols-outlined">restart_alt</span></button>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="fac-btn" id="fac-first-${col}" onclick="facPage('${col}','first')">inizio</button>
+          <button class="fac-btn" id="fac-prev-${col}"  onclick="facPage('${col}','prev')">prec.</button>
+          <span class="page-indicator" id="fac-page-${col}">–</span>
+          <button class="fac-btn" id="fac-next-${col}"  onclick="facPage('${col}','next')">succ.</button>
+          <button class="fac-btn" id="fac-last-${col}"  onclick="facPage('${col}','last')">fine</button>
+        </div>
+      </div>
+      <div class="fac-viewer" id="fac-viewer-${col}">
+        <div class="fac-viewport" id="fac-vp-${col}">`;
+
+          surfaces.forEach((s, i) => {
+            const url =
+              s.getElementsByTagNameNS(NS, "graphic")[0]?.getAttribute("url") ||
+              "";
+            const witId = (s.getAttribute("corresp") || "").replace("#", "");
+            const n = s.getAttribute("n") || String(i + 1);
+            h += `<img class="fac-img hidden" src="${url}" data-wit="${witId}" data-n="${n}" draggable="false"
+              onerror="this.src='https://placehold.co/600x800?text=Immagine+non+disponibile'">`;
+          });
+
+          h += `</div></div></div>`;
+          container.innerHTML = h;
+
+          // Bind drag + wheel
+          const viewer = document.getElementById(`fac-viewer-${col}`);
+          viewer.addEventListener("mousedown", (e) => facStartDrag(col, e));
+          viewer.addEventListener(
+            "wheel",
+            (e) => {
+              e.preventDefault();
+              facZoom(col, e.deltaY < 0 ? 1.1 : 0.9);
+            },
+            { passive: false },
+          );
+          viewer.addEventListener("dblclick", () => facReset(col));
+        });
+      }
+
+      function initFacsimileDisplay(col) {
+        const witId = witnesses[0]?.id;
+        if (witId) facWitChange(col, witId);
+      }
+
+      function facWitChange(col, witId) {
+        const st = facState[col];
+        st.witId = witId;
+        // Select in dropdown
+        const sel = document.getElementById(`fac-wit-${col}`);
+        if (sel) sel.value = witId;
+        // Filter pages
+        const imgs = Array.from(
+          document.querySelectorAll(`#fac-vp-${col} .fac-img`),
+        );
+        st.pages = imgs.filter((img) => img.dataset.wit === witId);
+        st.pageIdx = 0;
+        facReset(col);
+        facUpdateDisplay(col);
+      }
+
+      function facPage(col, action) {
+        const st = facState[col];
+        const max = st.pages.length - 1;
+        if (action === "first") st.pageIdx = 0;
+        else if (action === "last") st.pageIdx = max;
+        else if (action === "prev" && st.pageIdx > 0) st.pageIdx--;
+        else if (action === "next" && st.pageIdx < max) st.pageIdx++;
+        facReset(col);
+        facUpdateDisplay(col);
+      }
+
+      function facUpdateDisplay(col) {
+        const st = facState[col];
+        const imgs = Array.from(
+          document.querySelectorAll(`#fac-vp-${col} .fac-img`),
+        );
+        imgs.forEach((img) => img.classList.add("hidden"));
+        const active = st.pages[st.pageIdx];
+        if (active) {
+          active.classList.remove("hidden");
+        }
+        const label = document.getElementById(`fac-page-${col}`);
+        if (label) label.textContent = active ? `c. ${active.dataset.n}` : "–";
+
+        const isFirst = st.pageIdx === 0;
+        const isLast = st.pageIdx === st.pages.length - 1;
+        ["first", "prev"].forEach((k) => {
+          const b = document.getElementById(`fac-${k}-${col}`);
+          if (b) b.disabled = isFirst;
+        });
+        ["next", "last"].forEach((k) => {
+          const b = document.getElementById(`fac-${k}-${col}`);
+          if (b) b.disabled = isLast;
+        });
+      }
+
+      function facZoom(col, factor) {
+        const st = facState[col];
+        st.zoom = Math.min(Math.max(st.zoom * factor, 0.5), 8);
+        facApplyTransform(col);
+      }
+
+      function facReset(col) {
+        const st = facState[col];
+        st.zoom = 1;
+        st.x = 0;
+        st.y = 0;
+        facApplyTransform(col);
+      }
+
+      function facApplyTransform(col) {
+        const vp = document.getElementById(`fac-vp-${col}`);
+        if (!vp) return;
+        const st = facState[col];
+        vp.style.transform = `translate(${st.x}px,${st.y}px) scale(${st.zoom})`;
+      }
+
+      function facStartDrag(col, e) {
+        if (e.button !== 0) return;
+        const st = facState[col];
+        st.dragging = true;
+        st.mx = e.clientX;
+        st.my = e.clientY;
+        const onMove = (mv) => {
+          if (!st.dragging) return;
+          st.x += mv.clientX - st.mx;
+          st.y += mv.clientY - st.my;
+          st.mx = mv.clientX;
+          st.my = mv.clientY;
+          facApplyTransform(col);
+        };
+        const onUp = () => {
+          st.dragging = false;
+          window.removeEventListener("mousemove", onMove);
+          window.removeEventListener("mouseup", onUp);
+        };
+        window.addEventListener("mousemove", onMove);
+        window.addEventListener("mouseup", onUp);
+      }
+    </script>
+  </body>
+</html>

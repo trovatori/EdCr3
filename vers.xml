@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Farai un vers de dreit nien</title>
+        <author>Guglielmo IX d’Aquitania</author>
+        <respStmt>
+          <resp>Edizione digitale</resp>
+          <name>Lorenzo Fabiani</name>
+        </respStmt>
+      </titleStmt>
+      <sourceDesc>
+        <listWit>
+          <witness xml:id="C">Paris, BnF, fr. 856</witness>
+          <witness xml:id="E">Paris, BnF, fr. 1749</witness>
+        </listWit>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+
+  <facsimile>
+  <surface xml:id="C_f1" corresp="#C" n="1">
+    <graphic url="https://gallica.bnf.fr/ark:/12148/btv1b52507464j/f10.highres" mimeType="image/jpeg"/>
+  </surface>
+  <surface xml:id="C_f2" corresp="#C" n="2">
+    <graphic url="https://gallica.bnf.fr/ark:/12148/btv1b52507464j/f10.highres" mimeType="image/jpeg"/>
+  </surface>
+  <surface xml:id="E_f1" corresp="#E" n="1">
+    <graphic url="https://gallica.bnf.fr/ark:/12148/btv1b52507464j/f10.highres" mimeType="image/jpeg"/>
+  </surface>
+</facsimile>
+
+  <text>
+    <front>
+      <div type="preface">
+        <head>Prefazione</head>
+        <p>
+          Questa edizione digitale del componimento <em>Farai un vers de dreit nien</em>
+          si fonda sull’edizione critica curata da Mario Eusebi.
+        </p>
+      </div>
+
+      <div type="criteria">
+        <head>Osservazioni sulla tradizione manoscritta</head>
+        <p>
+          Uno dei due manoscritti, E, inserisce tra la sesta strofe e la "tornada"
+          una strofe che Eusebi considera un allotropo della sesta, poiché contiene
+          un verso («non aus dire lo tort que m'a») che contraddice il v. 32 e riprende
+          in modo incongruo il v. 27.
+        </p>
+      </div>
+    </front>
+
+    <body>
+      <div type="edition">
+        <lg>
+          <l n="1">
+            Farai un vers de
+            <app xml:id="v1">
+              <lem wit="#E">dreit</lem>
+              <rdg wit="#C" type="orthographic">dreyt</rdg>
+            </app>
+            nien
+          </l>
+
+          <l n="2">
+            non er de mi ni d'autra <seg xml:id="v2-gen">gen</seg>,
+          </l>
+
+<note target="#v2-gen">
+Il termine <em>gen</em> va inteso nel senso ampio di "gente, società", e contribuisce
+alla dichiarazione inaugurale di radicale distacco del soggetto lirico non solo da
+ogni esperienza personale, ma anche da qualunque contesto sociale affine 123 condiviso.
+</note>
+
+          <l n="3">
+            non er d’amor ni de joven
+          </l>
+
+          <l n="4">
+            ni de ren au,
+          </l>
+
+          <l n="5">
+            qu’enans
+            <app xml:id="v5">
+              <lem wit="#E">fo</lem>
+              <rdg wit="#C" type="substantive">fuy</rdg>
+            </app>
+            trobatz en durmen
+          </l>
+
+          <l n="6">
+            <app xml:id="v6">
+              <lem wit="#E">sus un</lem>
+              <rdg wit="#C" type="substantive">sobre</rdg>
+            </app>
+            <app xml:id="v7">
+              <lem wit="#E">chivau</lem>
+              <rdg wit="#C" type="orthographic">chevau</rdg>
+            </app>.
+          </l>
+        </lg>
+      </div>
+
+
+<div type="translation" xml:lang="it">
+    <lg>
+      <l n="1">Farò un "vers" di puro nulla</l>
+      <l n="2">non sarà su di me né su altri</l>
+      <l n="3">non d'Amore né di Gioventù</l> 
+      <l n="4">nè di altro,</l>
+      <l n="5">ché anzi fu composto dormendo</l>
+      <l n="6">a cavallo.</l>
+    </lg>
+  </div>
+</body>
+
+  </text>
+</TEI>
