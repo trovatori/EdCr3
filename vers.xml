@@ -20,14 +20,17 @@
   </teiHeader>
 
   <facsimile>
-  <surface xml:id="C_f1" corresp="#C" n="1">
-    <graphic url="https://gallica.bnf.fr/ark:/12148/btv1b52507464j/f10.highres" mimeType="image/jpeg"/>
+  <surface xml:id="C_f1" corresp="#C" n="230v">
+    <graphic url="https://gallica.bnf.fr/ark:/12148/btv1b8419246t/f528.highres" mimeType="image/jpeg"/>
   </surface>
-  <surface xml:id="C_f2" corresp="#C" n="2">
-    <graphic url="https://gallica.bnf.fr/ark:/12148/btv1b52507464j/f10.highres" mimeType="image/jpeg"/>
+  <surface xml:id="C_f2" corresp="#C" n="231r">
+    <graphic url="https://gallica.bnf.fr/ark:/12148/btv1b8419246t/f529.highres" mimeType="image/jpeg"/>
   </surface>
-  <surface xml:id="E_f1" corresp="#E" n="1">
-    <graphic url="https://gallica.bnf.fr/ark:/12148/btv1b52507464j/f10.highres" mimeType="image/jpeg"/>
+  <surface xml:id="E_f1" corresp="#E" n="114">
+    <graphic url="https://gallica.bnf.fr/ark:/12148/btv1b6000801v/f118.highres" mimeType="image/jpeg"/>
+  </surface>
+    <surface xml:id="E_f1" corresp="#E" n="115">
+    <graphic url="https://gallica.bnf.fr/ark:/12148/btv1b6000801v/f119.highres" mimeType="image/jpeg"/>
   </surface>
 </facsimile>
 
