@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Farai un vers de dreit nien</title>
+        <author>Guglielmo IX d’Aquitania</author>
+        <respStmt>
+          <resp>Edizione digitale</resp>
+          <name>Lorenzo Fabiani</name>
+        </respStmt>
+      </titleStmt>
+      <sourceDesc>
+        <listWit>
+          <witness xml:id="C">Paris, BnF, fr. 856</witness>
+          <witness xml:id="E">Paris, BnF, fr. 1749</witness>
+        </listWit>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+
+  <facsimile>
+  <surface xml:id="C_f1" corresp="#C" n="230v">
+    <graphic url="https://gallica.bnf.fr/ark:/12148/btv1b8419246t/f528.highres" mimeType="image/jpeg"/>
+  </surface>
+  <surface xml:id="C_f2" corresp="#C" n="231r">
+    <graphic url="https://gallica.bnf.fr/ark:/12148/btv1b8419246t/f529.highres" mimeType="image/jpeg"/>
+  </surface>
+  <surface xml:id="E_f1" corresp="#E" n="114">
+    <graphic url="https://gallica.bnf.fr/ark:/12148/btv1b6000801v/f118.highres" mimeType="image/jpeg"/>
+  </surface>
+    <surface xml:id="E_f1" corresp="#E" n="115">
+    <graphic url="https://gallica.bnf.fr/ark:/12148/btv1b6000801v/f119.highres" mimeType="image/jpeg"/>
+  </surface>
+</facsimile>
+
+  <text>
+    <front>
+      <div type="introduction">
+        <head>Introduzione</head>
+        <p>
+          Questa edizione digitale del componimento <em>Farai un vers de dreit nien</em>
+          si fonda sull’edizione critica curata da Mario Eusebi.
+        </p>
+      </div>
+
+      <div type="editorialNote">
+        <head>Nota al testo</head>
+        <head1>Osservazioni sulla tradizione manoscritta</head1>
+        <p>
+          Uno dei due manoscritti, E, inserisce tra la sesta strofe e la "tornada"
+          una strofe che Eusebi considera un allotropo della sesta, poiché contiene
+          un verso («non aus dire lo tort que m'a») che contraddice il v. 32 e riprende
+          in modo incongruo il v. 27.
+        </p>
+      </div>
+    </front>
+
+    <body>
+      <div type="edition">
+        <lg>
+          <l n="1">
+            Farai un vers de
+            <app xml:id="v1">
+              <lem wit="#E">dreit</lem>
+              <rdg wit="#C" type="orthographic">dreyt</rdg>
+            </app>
+            nien<seg xml:id="v1n"></seg>
+          </l>
+          
+          <note target="#v1n">
+            <em>de dreit nien</em>: per la corretta interpretazione, si veda Ménard 1991, p. 344, n. 27.
+          </note>
+
+          <l n="2">
+            non er de mi ni d'autra gen,
+          </l>
+          
+          
+          <l n="3">
+            non er d’amor ni de joven<seg xml:id="v3n">
+            </seg>
+          </l>
+          <note target="#v3n">
+            <em>joven</em>: cfr. <em>Companhos, farai un vers... covinen</em>, I, v. 3.
+          </note>
+
+          <l n="4">
+            ni de ren au,<seg xml:id="v4n"></seg>
+          </l>
+          
+          <note target ="v4n">
+          <em>au</em>: &lt; ALIU, con vocalizzazione della -I finale, coì come si ha, sempre in rima, ai vv. 6, 10, ecc.
+            Che non debba trattarsi di singolarità pittavina si evince dai materiali riuniti in Pfister 1976, pp. 101-104,
+            ai quali si possono aggiungere, per il dileguio di -<em>t</em> dopo il dittongo <em>au</em>, come in <em>au</em> &lt; ALTU,
+            quanto è riunito nella nota al v. 12. Cfr. Jensen 1986, pp. 349-350.
+          </note>
+          
+          <l n="5">
+            qu’enans
+            <app xml:id="v5">
+              <lem wit="#E">fo</lem>
+              <rdg wit="#C" type="substantive">fuy</rdg>
+            </app><seg xml:id="v5n"></seg>
+            trobatz en durmen
+          </l>
+          
+          <note target ="v5n">
+            <em>fo</em>: la lezione concorrente di C, <em>fuy</em>, merita considerazione in quanto elimina
+            la divaricazione dei due tempi di composizione del <em>vers</em>.
+          </note>
+
+          <l n="6">
+            <app xml:id="v6">
+              <lem wit="#E">sus un</lem>
+              <rdg wit="#C" type="substantive">sobre</rdg>
+            </app>
+            <app xml:id="v7">
+              <lem wit="#E">chivau</lem>
+              <rdg wit="#C" type="orthographic">chevau</rdg>
+            </app>.<seg xml:id="v6n"></seg>
+          </l>
+          
+          <note target ="v6n">
+            <em>en durmen... chivau</em>: il cavaliere dormiente sul suo cavallo è motivo letterario non incompatibile con la foggia 
+            della sella medievale (cfr. Riquer 1975, I, p. 113). Per una cornice di riferimento sulla forma <em>chivau</em>, vedi FEW, II, 8-9, 12.
+          </note>
+          
+        </lg>
+      </div>
+
+
+<div type="translation" xml:lang="it">
+    <p>Farò un "vers" proprio su niente; non sarà su di me né su altri, non sarà d'amore né di gioventù,
+        né di altra cosa, tanto più che fu concepito, dormendo, su un cavallo.</p>
+  </div>
+</body>
+    
+    <back>
+        <div type="bibliography">
+        <listBibl>
+          <bibl>Jensen 1986 = </bibl>
+          <bibl>Ménard 1991 = Phillippe M., <em>Sens, contresens, non-sens. Réflexions sur la pièce "Farai un vers de dreyt nien" de Guillaume IX</em>, 
+            in <em>Il miglior fabbro. Mélanges de langue et de littérature médiévales offerts à Pierre Bec par ses élèves, ses collègues et ses amis</em>
+            Poitiers, Centre d'Études Supérieures de Civilisation Médiévale, pp. 338-348.</bibl>
+          <bibl>Pfister 1976 = Max P., <em>La langue de Guilhelm IX, comte de Poitiers</em>, «Cahiers de Civilisation Médiévale», XIX, pp. 91-113.</bibl>
+          <bibl>Riquer 1975 =</bibl>
+        </listBibl>
+      </div>
+    </back>
+    
+  </text>
+</TEI>
