@@ -881,7 +881,7 @@
         Array.from(listBibl.getElementsByTagNameNS(NS, "bibl")).forEach(
           (b) => {
             const biblHtml = b.innerHTML.replace(/<hi\s+rend="italic">(.*?)<\/hi>/g, '<em>$1</em>');
-h += `<p style="font-family:'Source Serif 4',serif;font-size:1rem;line-height:1.8;margin-bottom:0.6rem">${smartQuotesHtml(biblHtml)}</p>`;
+h += `<p style="font-family:'Source Serif 4',serif;font-size:1rem;line-height:1.8;margin-bottom:0.6rem;padding-left:2rem;text-indent:-2rem">${smartQuotesHtml(biblHtml)}</p>`;
           },
         );
         h += "</div>";
