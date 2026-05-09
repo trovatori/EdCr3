@@ -1,0 +1,1747 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edizione Diplomatica e Interpretativa · Filologia Romanza Digitale</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+  <!-- Mirador IIIF Viewer -->
+  <script src="https://unpkg.com/mirador@3.3.0/dist/mirador.min.js"></script>
+
+  <style>
+    :root {
+      --accent:       #a03f33;
+      --accent-light: rgba(160,63,51,0.08);
+      --bg:           #fbf9f4;
+      --bg-panel:     #f5f3ee;
+      --text:         #1a1410;
+      --muted:        #6b7280;
+      --border:       #e2ddd6;
+      --dipl-add:     #2a6e3f;
+      --dipl-del:     #8b1a1a;
+      --dipl-damage:  #7a5c00;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: "Source Sans 3", sans-serif; background: var(--bg); color: var(--text); margin: 0; }
+
+    /* ── LAYOUT ── */
+    .layout-single #col-right { display: none !important; }
+    .layout-single #col-left  { width: 100% !important; border-right: none !important; }
+    .layout-dual   #col-right { display: flex !important; }
+    .layout-dual   #col-left  { width: 50% !important; border-right: 1px solid var(--border) !important; }
+    .hidden { display: none !important; }
+
+    /* ── SIDEBAR ── */
+    aside { width: 220px; flex-shrink: 0; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+    .nav-btn {
+      display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 20px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); background: none; border: none; border-left: 3px solid transparent;
+      cursor: pointer; transition: all 0.18s; text-align: left;
+    }
+    .nav-btn:hover  { background: rgba(0,0,0,0.04); color: var(--text); }
+    .nav-btn.active { background: white; border-left-color: var(--accent); color: var(--accent); font-weight: 800; }
+    .nav-btn .material-symbols-outlined { font-size: 18px; font-variation-settings: "FILL" 0,"wght" 300,"GRAD" 0,"opsz" 20; }
+
+    /* ── TABS ── */
+    .tab-bar { display: flex; align-items: stretch; border-bottom: 1px solid var(--border); background: white; min-height: 40px; overflow-x: auto; scrollbar-width: none; }
+    .tab-bar::-webkit-scrollbar { display: none; }
+    .tab {
+      padding: 0 14px; font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--muted); background: none; border: none; border-bottom: 2px solid transparent;
+      cursor: pointer; white-space: nowrap; transition: all 0.15s; margin-bottom: -1px;
+    }
+    .tab:hover  { color: var(--text); }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* ── SCROLL ── */
+    .scroll-pane { flex: 1; overflow-y: auto; }
+    .scroll-pane::-webkit-scrollbar { width: 4px; }
+    .scroll-pane::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+    /* ── PROSE (front-matter) ── */
+    .prose { max-width: 720px; margin: 0 auto; padding: 52px 48px; }
+    .prose h1 { font-family: "Source Sans 3", sans-serif; font-size: 1.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: -0.01em; margin: 0 0 2rem; color: var(--accent); }
+    .prose h2 { font-family: "Source Sans 3", sans-serif; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin: 2.5rem 0 0.8rem; }
+    .prose p  { font-family: "Source Serif 4", serif; font-size: 1.05rem; line-height: 1.85; margin: 0 0 1.2rem; }
+
+    /* ── TESTO POETICO ── */
+    .tei-content { font-family: "Source Serif 4", serif; font-size: 1.1rem; line-height: 1.9; padding: 48px 52px; }
+    .tei-lg { margin-bottom: 1.5rem; }
+    .tei-l  { position: relative; padding-left: 3.5rem; margin-bottom: 0.15rem; }
+    .line-n { position: absolute; left: 0; width: 2.8rem; text-align: right; font-family: "Source Sans 3", sans-serif; font-size: 0.7rem; color: var(--accent); opacity: 0.55; user-select: none; top: 0.25em; }
+
+    /* ── TESTO PROSA (dentro tei-content) ── */
+    .tei-prose-p {
+      font-family: "Source Serif 4", serif;
+      font-size: 1.05rem;
+      line-height: 1.85;
+      margin: 0 0 1.2rem;
+      padding-left: 0;
+    }
+
+    /* ── DIPLOMATICA ── */
+    .dipl-abbr    { font-style: italic; border-bottom: 1px dotted #999; cursor: help; }
+    .dipl-reg     { font-style: normal;  border-bottom: 1px dotted #999; cursor: help; }
+    .dipl-add     { color: var(--dipl-add); font-size: 0.8em; vertical-align: super; line-height: 1; }
+    .dipl-add::before { content: "↑"; font-size: 0.75em; opacity: 0.6; }
+    .dipl-add[data-place="margin"]::before { content: "→"; }
+    .dipl-del     { color: var(--dipl-del); text-decoration: line-through; text-decoration-color: var(--dipl-del); opacity: 0.7; }
+    .dipl-damage  { color: var(--dipl-damage); border-bottom: 2px dotted var(--dipl-damage); cursor: help; }
+    .dipl-damage::before { content: "†"; margin-right: 1px; }
+    .dipl-damage::after  { content: "†"; margin-left:  1px; }
+    .dipl-supplied { color: var(--dipl-damage); }
+    .dipl-supplied::before { content: "⟨"; }
+    .dipl-supplied::after  { content: "⟩"; }
+
+    /* ── INTERPRETATIVA ── */
+    /* ── COLLEGAMENTO FACSIMILE ── */
+    .lb-facs {
+      font-family: "Source Sans 3", sans-serif;
+      font-size: 0.6em;
+      font-weight: 700;
+      color: var(--accent);
+      opacity: 0.55;
+      cursor: pointer;
+      vertical-align: super;
+      line-height: 1;
+      padding: 0 2px;
+      border-radius: 2px;
+      transition: opacity .15s, background .15s;
+      user-select: none;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      font-style: italic;
+    }
+    .lb-facs:hover {
+      opacity: 1;
+      background: var(--accent-light);
+    }
+    .lb-marker {
+      color: var(--muted);
+      font-size: 0.85em;
+      font-family: "Source Sans 3", sans-serif;
+      font-weight: 400;
+      letter-spacing: 0;
+      cursor: default;
+      user-select: none;
+    }
+    .interp-corr { border-bottom: 1px solid #aaa; cursor: help; }
+
+    /* ── NOTE / SEG ── */
+    .tei-seg { cursor: pointer; }
+    .note-marker { font-family: "Source Sans 3", sans-serif; font-size: 0.65em; vertical-align: super; line-height: 1; color: var(--accent); font-weight: 700; cursor: pointer; }
+    .note-marker.hl, .tei-seg.hl { background: var(--accent-light); border-radius: 2px; }
+    .note-entry {
+      border-left: 3px solid var(--accent); padding: 14px 18px; margin: 16px;
+      background: rgba(132,139,144,0.116); font-family: "Source Serif 4", serif;
+      font-size: 0.95rem; transition: background 0.15s; cursor: pointer;
+    }
+    .note-entry.hl { background: rgba(83,104,120,0.13); }
+    .note-marker-label { font-family: "Source Sans 3", sans-serif; font-size: 0.7rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
+
+    /* ── TRADUZIONE ── */
+    .tei-translation .tei-l { font-style: italic; color: #4b5563; }
+
+    /* ── LEGENDA ── */
+    .legend { font-family: "Source Sans 3", sans-serif; font-size: 10px; padding: 8px 16px; border-bottom: 1px solid var(--border); background: #fafaf8; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+    .legend-label { font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-right: 4px; }
+    .legend-item  { display: flex; align-items: center; gap: 5px; color: var(--muted); }
+
+    /* ── FACSIMILE / MIRADOR ── */
+    .fac-wrapper { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+    .fac-toolbar {
+      padding: 8px 14px; border-bottom: 1px solid var(--border); background: white;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+      gap: 8px; flex-shrink: 0; z-index: 10;
+    }
+    .fac-mirador-container { flex: 1; min-height: 0; position: relative; overflow: hidden; }
+    /* Forza Mirador a riempire il contenitore e nasconde i pannelli laterali */
+    .fac-mirador-container .mirador-viewer { width: 100% !important; height: 100% !important; }
+    .fac-mirador-container [class*="WorkspaceControlPanel"],
+    .fac-mirador-container [class*="WorkspaceMosaic"] > :not([class*="Window"]) { display: none !important; }
+
+    .fac-btn  { padding: 5px 10px; border-radius: 5px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; background: white; border: 1px solid var(--border); color: var(--muted); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 4px; }
+    .fac-btn .material-symbols-outlined { font-size: 16px; font-variation-settings: "FILL" 0,"wght" 300,"GRAD" 0,"opsz" 20; }
+    .fac-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .fac-btn:disabled { opacity: 0.3; cursor: default; }
+    .page-indicator { font-family: "Source Sans 3", sans-serif; font-size: 12px; font-weight: 800; color: var(--accent); min-width: 72px; text-align: center; }
+    .fac-loading {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: #e8e6e0; flex-direction: column; gap: 12px; z-index: 5;
+    }
+    .fac-loading-text { font-family: "Source Sans 3", sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+    .fac-spinner {
+      width: 28px; height: 28px; border: 3px solid var(--border);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    
+    /* Rimuove la linea blu superiore (border-top del Window di Mirador) */
+    #mirador-mount-L > div,
+    #mirador-mount-R > div,
+    #mirador-mount-L [class*="Window"],
+    #mirador-mount-R [class*="Window"],
+    #mirador-mount-L [class*="window"],
+    #mirador-mount-R [class*="window"] {
+      border-top: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+    /* Barra superiore finestra */
+    #mirador-mount-L [class*="windowTopBar"],
+    #mirador-mount-R [class*="windowTopBar"],
+    #mirador-mount-L [class*="topBar"],
+    #mirador-mount-R [class*="topBar"] {
+      background-color: white !important;
+      border-bottom: 1px solid var(--border) !important;
+      box-shadow: none !important;
+    }
+    /* Posizionamento corretto mirador-canvas-nav (pulsanti zoom/frecce) */
+    #mirador-mount-L .mirador-osd-container,
+    #mirador-mount-R .mirador-osd-container { position: relative !important; }
+    #mirador-mount-L .mirador-canvas-nav,
+    #mirador-mount-R .mirador-canvas-nav {
+      position: absolute !important;
+      bottom: 8px !important;
+      top: auto !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      height: auto !important;
+      width: auto !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    /* Colore pulsanti Mirador */
+    #mirador-mount-L button, #mirador-mount-R button { color: var(--muted) !important; }
+    #mirador-mount-L button:hover, #mirador-mount-R button:hover { color: var(--accent) !important; }
+
+    /* ── HEADER ── */
+    header { border-bottom: 1px solid var(--border); background: rgba(251,249,244,0.97); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 50; }
+    .header-inner  { display: flex; justify-content: space-between; align-items: center; padding: 10px 24px; }
+    .header-author { font-weight: 500; font-size: 1rem; letter-spacing: -0.01em; }
+    .header-title  { font-family: "Source Serif 4", serif; font-style: italic; color: var(--accent); font-size: 0.95rem; }
+    .header-status { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: #aaa; }
+    section.col { display: flex; flex-direction: column; overflow: hidden; background: white; }
+    .sep { height: 1px; background: var(--border); margin: 8px 20px; }
+    .wit-entry { display: flex; align-items: baseline; gap: 20px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .wit-id    { font-size: 1.6rem; font-weight: 800; color: var(--accent); min-width: 36px; }
+    .wit-name  { font-family: "Source Serif 4", serif; font-size: 1.05rem; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div id="header-meta" style="display:flex;gap:16px;align-items:baseline">
+      <span style="color:#aaa;font-size:13px">Caricamento…</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px">
+      <a href="../index.html"
+         style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color .15s"
+         onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
+        <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 20">arrow_back</span>Home
+      </a>
+      <span id="loading-status" class="header-status"></span>
+    </div>
+  </div>
+</header>
+
+<!-- BODY -->
+<div style="display:flex;height:calc(100vh - 53px);overflow:hidden" id="main-body" class="layout-single">
+
+  <!-- SIDEBAR -->
+  <aside>
+    <div style="padding:20px 20px 14px">
+      <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.15em;color:var(--muted)">Edizione Digitale</div>
+    </div>
+    <nav id="sidebar-nav" style="flex:1;padding:4px 0"></nav>
+    <div class="sep"></div>
+    <div style="padding:14px 20px">
+      <div id="resp-info" style="font-size:9px;color:#bbb;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;line-height:1.6"></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main style="flex:1;display:flex;overflow:hidden">
+
+    <!-- COL LEFT -->
+    <section class="col" id="col-left" style="flex:1">
+      <div class="tab-bar hidden" id="tabs-L"></div>
+      <div class="scroll-pane" id="scroll-L">
+        <div id="view-introduction"  class="prose hidden"></div>
+        <div id="view-editorialNote" class="prose hidden"></div>
+        <div id="view-criteria"      class="prose hidden"></div>
+        <div id="view-witnesses"     class="prose hidden"></div>
+        <div id="panes-L" class="hidden" style="height:100%;display:flex;flex-direction:column;overflow:hidden">
+          <div style="flex:1;min-height:0;display:flex;flex-direction:column" id="inner-scroll-L">
+            <div id="out-facsimile-L"      class="hidden" style="flex:1;min-height:0"></div>
+            <div id="out-diplomatica-L"    class="hidden" style="flex:1;min-height:0;display:flex;flex-direction:column">
+              <div id="legend-dipl-L"  class="legend"></div>
+              <div id="dipl-text-L"    class="tei-content scroll-pane" style="flex:1"></div>
+            </div>
+            <div id="out-interpretativa-L" class="hidden" style="flex:1;min-height:0;display:flex;flex-direction:column">
+              <div id="legend-interp-L" class="legend"></div>
+              <div id="interp-text-L"   class="tei-content scroll-pane" style="flex:1"></div>
+            </div>
+            <div id="out-testo-L"      class="tei-content hidden"></div>
+            <div id="out-commento-L"   class="hidden"></div>
+            <div id="out-traduzione-L" class="tei-content tei-translation hidden"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COL RIGHT -->
+    <section class="col" id="col-right" style="flex:1;display:none;border-left:1px solid var(--border)">
+      <div class="tab-bar" id="tabs-R"></div>
+      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden" id="scroll-R">
+        <div style="flex:1;min-height:0;display:flex;flex-direction:column" id="inner-scroll-R">
+          <div id="out-facsimile-R"      class="hidden" style="flex:1;min-height:0"></div>
+          <div id="out-diplomatica-R"    class="hidden" style="flex:1;min-height:0;display:flex;flex-direction:column">
+            <div id="legend-dipl-R"  class="legend"></div>
+            <div id="dipl-text-R"    class="tei-content scroll-pane" style="flex:1"></div>
+          </div>
+          <div id="out-interpretativa-R" class="hidden" style="flex:1;min-height:0;display:flex;flex-direction:column">
+            <div id="legend-interp-R" class="legend"></div>
+            <div id="interp-text-R"   class="tei-content scroll-pane" style="flex:1"></div>
+          </div>
+          <div id="out-testo-R"      class="tei-content hidden"></div>
+          <div id="out-commento-R"   class="hidden"></div>
+          <div id="out-traduzione-R" class="tei-content tei-translation hidden"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CONFIGURAZIONE
+═══════════════════════════════════════════════════════════════ */
+const TEI_FILE = "philippe.xml"; // ← modifica qui con il nome del file XML
+const NS = "http://www.tei-c.org/ns/1.0";
+let xml = null;
+
+const PANE_ORDER  = ["facsimile","diplomatica","interpretativa","testo","commento","traduzione"];
+const PANE_LABELS = {
+  facsimile:      "Facsimile",
+  diplomatica:    "Ed. Diplomatica",
+  interpretativa: "Ed. Interpretativa",
+  testo:          "Testo Critico",
+  commento:       "Commento",
+  traduzione:     "Traduzione",
+};
+
+let availablePanes = [];
+const activePaneId = { L: null, R: null };
+
+/* Stato Mirador per colonna */
+const miradorState = {
+  L: { viewer: null, pages: [], pageIdx: 0, initialized: false },
+  R: { viewer: null, pages: [], pageIdx: 0, initialized: false },
+};
+
+let noteIndexMap = {};
+let commentData  = [];
+
+/* ═══════════════════════════════════════════════════════════════
+   SMART QUOTES  — applicata a tutto il testo del progetto
+═══════════════════════════════════════════════════════════════ */
+function smartQuotes(str) {
+  if (!str) return str;
+  return str
+    .replace(/(^|[\s(\[{>«])"([^"])/g, '$1\u201C$2')
+    .replace(/"([\s.,;:!?)\]}>»]|$)/g,  '\u201D$1')
+    .replace(/(\w)'(\w)/g,              '$1\u2019$2')
+    .replace(/(^|[\s])'(\w)/g,          '$1\u2018$2')
+    .replace(/'/g,                       '\u2019');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════════════════════════ */
+document.addEventListener("DOMContentLoaded", async () => {
+  const status = document.getElementById("loading-status");
+  status.textContent = "Caricamento…";
+  try {
+    const r = await fetch(TEI_FILE);
+    if (!r.ok) throw new Error(r.status);
+    xml = new DOMParser().parseFromString(await r.text(), "application/xml");
+    buildAll();
+    status.textContent = "Laboratorio di Filologia Romanza Digitale";
+  } catch(e) {
+    status.textContent = "Errore XML";
+    console.error(e);
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   BUILD ALL
+═══════════════════════════════════════════════════════════════ */
+/* Stato condiviso tra le funzioni walk (es. superficie corrente per <pb>) */
+const walkState = { currentSurface: '', showSurfaceLabel: false };
+
+/* Indice globale delle zone facsimile: { zoneId → { surfaceId, n, ulx, uly, lrx, lry } } */
+let zoneIndex = {};
+
+/* Indice globale delle superfici: { surfaceId → n } */
+let surfaceIndex = {};
+
+function buildZoneIndex() {
+  zoneIndex = {};
+  surfaceIndex = {};
+  const surfaces = Array.from(xml.getElementsByTagNameNS(NS, "surface"));
+  surfaces.forEach(surf => {
+    const n   = surf.getAttribute("n") || "";
+    const sid = surf.getAttribute("xml:id") || "";
+    // Indice superfici
+    if (sid) surfaceIndex[sid] = { surfaceN: n };
+    // Indice zone
+    Array.from(surf.getElementsByTagNameNS(NS, "zone")).forEach(zone => {
+      const zid = zone.getAttribute("xml:id");
+      if (!zid) return;
+      zoneIndex[zid] = {
+        surfaceN: n,
+        surfaceId: sid,
+        ulx: parseInt(zone.getAttribute("ulx") || 0),
+        uly: parseInt(zone.getAttribute("uly") || 0),
+        lrx: parseInt(zone.getAttribute("lrx") || 0),
+        lry: parseInt(zone.getAttribute("lry") || 0),
+      };
+    });
+  });
+}
+
+function buildAll() {
+  buildZoneIndex();
+  buildHeader();
+  buildFrontMatter();
+  discoverPanes();
+  buildSidebar();
+  buildFacsimileContainers();
+  buildDiplomatica();
+  buildInterpretativa();
+  buildTesto();
+  buildCommento();
+  buildTraduzione();
+  buildTabs();
+  const first = ["introduction","editorialNote","criteria","witnesses"]
+    .find(t => document.getElementById("view-"+t)?.dataset.present);
+  selectView(first || "edition");
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UTILITY
+═══════════════════════════════════════════════════════════════ */
+function getDiv(type) {
+  return Array.from(xml.getElementsByTagNameNS(NS,"div"))
+    .find(d => d.getAttribute("type") === type) || null;
+}
+function colOf(el) {
+  if (el.closest("#col-left"))  return "L";
+  if (el.closest("#col-right")) return "R";
+  return null;
+}
+function otherCol(col) { return col === "L" ? "R" : "L"; }
+function ensurePaneVisible(col, paneId) {
+  if (document.getElementById("main-body").classList.contains("layout-single"))
+    selectView("edition");
+  if (activePaneId[col] !== paneId) switchPane(col, paneId);
+}
+function clearHighlights() {
+  document.querySelectorAll(".note-marker.hl,.tei-seg.hl,.note-entry.hl")
+    .forEach(el => el.classList.remove("hl"));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════════════════════ */
+function buildHeader() {
+  const author = xml.getElementsByTagNameNS(NS,"author")[0]?.textContent?.trim() || "";
+  const title  = xml.getElementsByTagNameNS(NS,"title")[0]?.textContent?.trim()  || "";
+  const resp   = xml.getElementsByTagNameNS(NS,"name")[0]?.textContent?.trim()   || "";
+  document.getElementById("header-meta").innerHTML =
+    `<span class="header-author">${smartQuotes(author)}</span><span class="header-title">${smartQuotes(title)}</span>`;
+  if (resp) document.getElementById("resp-info").textContent = `Ed. digitale a cura di ${resp}`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FRONT MATTER (supporto prosa piena)
+═══════════════════════════════════════════════════════════════ */
+const FRONT_LABELS = { introduction:"Introduzione", editorialNote:"Nota al testo", criteria:"Criteri editoriali" };
+
+function buildFrontMatter() {
+  const divs = Array.from(xml.getElementsByTagNameNS(NS,"div"));
+
+  Object.keys(FRONT_LABELS).forEach(type => {
+    const d  = divs.find(x => x.getAttribute("type") === type);
+    const el = document.getElementById("view-" + type);
+    if (!el || !d) return;
+    el.innerHTML = `<h1>${smartQuotes(d.getElementsByTagNameNS(NS,"head")[0]?.textContent || FRONT_LABELS[type])}</h1>` +
+                   formatTEIDiv(d);
+    el.dataset.present = "1";
+  });
+
+  // Testimoni
+  const witnesses = Array.from(xml.getElementsByTagNameNS(NS,"witness"));
+  const witEl = document.getElementById("view-witnesses");
+  if (witnesses.length > 0 && witEl) {
+    let h = '<h1>Testimoni</h1><div style="margin-top:2rem">';
+    witnesses.forEach(w => {
+      h += `<div class="wit-entry"><span class="wit-id">${w.getAttribute("xml:id")}</span><span class="wit-name">${smartQuotes(w.textContent.trim())}</span></div>`;
+    });
+    witEl.innerHTML = h + "</div>";
+    witEl.dataset.present = "1";
+  }
+}
+
+/**
+ * Renderizza ricorsivamente i nodi di un div TEI in HTML.
+ * Gestisce <p>, <head>, testo semplice, e applica smartQuotes a tutto.
+ */
+function formatTEIDiv(node) {
+  let h = "";
+  node.childNodes.forEach(c => {
+    if (c.localName === "head") return;
+    if (c.localName === "p") {
+      h += `<p>${smartQuotes(renderInlineXML(c))}</p>`;
+    } else if (c.localName === "div") {
+      const head = c.getElementsByTagNameNS(NS,"head")[0];
+      if (head) h += `<h2>${smartQuotes(head.textContent)}</h2>`;
+      h += formatTEIDiv(c);
+    } else if (c.nodeType === 3 && c.textContent.trim()) {
+      h += `<p>${smartQuotes(c.textContent.trim())}</p>`;
+    }
+  });
+  return h;
+}
+
+/**
+ * Renderizza l'interno di un nodo inline (per <p> con markup misto)
+ */
+function renderInlineXML(node) {
+  let h = "";
+  node.childNodes.forEach(c => {
+    if (c.nodeType === 3) {
+      h += smartQuotes(c.textContent);
+    } else if (c.nodeType === 1) {
+      if (c.localName === "em") {
+        h += `<em>${smartQuotes(c.textContent)}</em>`;
+      } else if (c.localName === "hi") {
+        const r = c.getAttribute('rend') || '';
+        const t = smartQuotes(c.textContent);
+        h += r === 'bold' ? `<strong>${t}</strong>` : `<em>${t}</em>`;
+      } else if (c.localName === "strong") {
+        h += `<strong>${c.textContent}</strong>`;
+      } else if (c.localName === "ref") {
+        h += `<a href="${c.getAttribute('target')||'#'}">${c.textContent}</a>`;
+      } else {
+        h += c.textContent;
+      }
+    }
+  });
+  return h;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DISCOVER PANES
+═══════════════════════════════════════════════════════════════ */
+function discoverPanes() {
+  const checks = {
+    facsimile:      () => xml.getElementsByTagNameNS(NS,"surface").length > 0,
+    diplomatica:    () => !!getDiv("diplomatic"),
+    interpretativa: () => !!getDiv("interpretative"),
+    testo:          () => !!getDiv("edition"),
+    commento:       () => { const e = getDiv("edition"); return e ? e.getElementsByTagNameNS(NS,"note").length > 0 : false; },
+    traduzione:     () => !!getDiv("translation"),
+  };
+  availablePanes = PANE_ORDER.filter(p => checks[p]?.());
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════════════════════ */
+const SIDEBAR_FRONT = [
+  { id:"introduction",  icon:"info",          label:"Introduzione",       type:"introduction"  },
+  { id:"editorialNote", icon:"manage_search", label:"Nota al testo",      type:"editorialNote" },
+  { id:"criteria",      icon:"book",          label:"Criteri editoriali", type:"criteria"      },
+  { id:"witnesses",     icon:"local_library", label:"Testimoni",          type:"witnesses"     },
+];
+
+function buildSidebar() {
+  let h = "";
+  SIDEBAR_FRONT.forEach(item => {
+    if (!document.getElementById("view-" + item.type)?.dataset.present) return;
+    h += `<button class="nav-btn" id="nav-${item.id}" onclick="selectView('${item.id}')">
+            <span class="material-symbols-outlined">${item.icon}</span>${item.label}
+          </button>`;
+  });
+  if (availablePanes.length > 0) {
+    h += '<div class="sep"></div>';
+    h += `<button class="nav-btn" id="nav-edition" onclick="selectView('edition')">
+            <span class="material-symbols-outlined">auto_stories</span>Edizione
+          </button>`;
+  }
+  document.getElementById("sidebar-nav").innerHTML = h;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════════════════════ */
+function buildTabs() {
+  ["L","R"].forEach(col => {
+    document.getElementById("tabs-"+col).innerHTML = availablePanes.map(p =>
+      `<button class="tab" data-pane="${p}" data-col="${col}"
+               onclick="switchPane('${col}','${p}')">${PANE_LABELS[p]}</button>`
+    ).join("");
+  });
+  activePaneId.L = availablePanes[0] || null;
+  activePaneId.R = availablePanes[1] || availablePanes[0] || null;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VIEW SWITCHING
+═══════════════════════════════════════════════════════════════ */
+function selectView(viewId) {
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById("nav-"+viewId)?.classList.add("active");
+
+  const body    = document.getElementById("main-body");
+  const scrollL = document.getElementById("scroll-L");
+
+  if (viewId === "edition") {
+    body.classList.replace("layout-single","layout-dual");
+    document.getElementById("tabs-L").classList.remove("hidden");
+    document.getElementById("tabs-R").classList.remove("hidden");
+    hideFrontViews();
+    document.getElementById("panes-L").classList.remove("hidden");
+    scrollL.style.overflow = "hidden";
+    scrollL.style.height   = "100%";
+    switchPane("L", activePaneId.L);
+    switchPane("R", activePaneId.R);
+  } else {
+    body.classList.replace("layout-dual","layout-single");
+    document.getElementById("tabs-L").classList.add("hidden");
+    document.getElementById("panes-L").classList.add("hidden");
+    scrollL.style.overflow = "";
+    scrollL.style.height   = "";
+    hideFrontViews();
+    document.getElementById("view-"+viewId)?.classList.remove("hidden");
+  }
+}
+
+function hideFrontViews() {
+  ["introduction","editorialNote","criteria","witnesses"]
+    .forEach(id => document.getElementById("view-"+id)?.classList.add("hidden"));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SWITCH PANE
+═══════════════════════════════════════════════════════════════ */
+function switchPane(col, paneId) {
+  if (!paneId) return;
+  activePaneId[col] = paneId;
+  document.querySelectorAll(`[data-col="${col}"].tab`)
+    .forEach(t => t.classList.toggle("active", t.dataset.pane === paneId));
+  ["facsimile","diplomatica","interpretativa","testo","commento","traduzione"].forEach(p => {
+    document.getElementById(`out-${p}-${col}`)?.classList.toggle("hidden", p !== paneId);
+  });
+  if (paneId === "facsimile") {
+    initMiradorForCol(col);
+    // Rimuove il background opaco di mirador-canvas-nav ogni volta che il pannello è visibile
+    fixMiradorCanvasNav(col);
+  }
+}
+
+/**
+ * Imposta background trasparente su mirador-canvas-nav.
+ * Viene chiamata ogni volta che il pannello facsimile diventa visibile.
+ * Usa polling perché Mirador monta l'elemento in modo asincrono.
+ */
+function fixMiradorCanvasNav(col) {
+  const container = document.getElementById(MIRADOR_EL[col]);
+  if (!container) return;
+  let attempts = 0;
+  const interval = setInterval(() => {
+    attempts++;
+    // Assicura posizionamento corretto del contenitore OSD
+    container.querySelectorAll(".mirador-osd-container").forEach(el => {
+      el.style.setProperty("position", "relative", "important");
+    });
+    // Ancora i pulsanti in basso al centro, sfondo trasparente
+    container.querySelectorAll(".mirador-canvas-nav").forEach(el => {
+      el.style.setProperty("background", "transparent", "important");
+      el.style.setProperty("background-color", "transparent", "important");
+      el.style.setProperty("box-shadow", "none", "important");
+      el.style.setProperty("position", "absolute", "important");
+      el.style.setProperty("bottom", "8px", "important");
+      el.style.setProperty("top", "auto", "important");
+      el.style.setProperty("left", "50%", "important");
+      el.style.setProperty("transform", "translateX(-50%)", "important");
+      el.style.setProperty("height", "auto", "important");
+      el.style.setProperty("width", "auto", "important");
+    });
+    if (attempts >= 20) clearInterval(interval); // smette dopo 4 secondi
+  }, 200);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   WALK NODES — dispatcher generico
+═══════════════════════════════════════════════════════════════ */
+function walkNodes(nodeList, handlers) {
+  let out = "";
+  Array.from(nodeList).forEach(node => {
+    if (node.nodeType === 3) {
+      out += handlers.text ? handlers.text(node) : node.textContent;
+    } else if (node.nodeType === 1) {
+      const fn = handlers[node.localName] || handlers.default;
+      out += fn ? fn(node) : node.textContent;
+    }
+  });
+  return out;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   buildLgHtml — gestisce sia versi (<lg>/<l>) che prosa (<p>)
+═══════════════════════════════════════════════════════════════ */
+function buildLgHtml(div, walkFn) {
+  let h = "";
+
+  // Prosa: se il div contiene <p> o <ab> (senza <lg>/<l>)
+  const hasParagraphs = div.getElementsByTagNameNS(NS,"p").length > 0
+                      || div.getElementsByTagNameNS(NS,"ab").length > 0;
+  const hasVerses     = div.getElementsByTagNameNS(NS,"l").length > 0;
+
+  if (hasParagraphs && !hasVerses) {
+    Array.from(div.childNodes).forEach(node => {
+      if (node.nodeType === 1 && node.localName === "p") {
+        h += `<p class="tei-prose-p">${walkFn(node)}</p>`;
+      } else if (node.nodeType === 1 && node.localName === "ab") {
+        h += walkFn(node);
+      } else if (node.nodeType === 1 && node.localName === "div") {
+        const head = node.getElementsByTagNameNS(NS,"head")[0];
+        if (head) h += `<h2 style="font-family:'Source Sans 3',sans-serif;font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin:2rem 0 0.6rem">${smartQuotes(head.textContent)}</h2>`;
+        h += buildLgHtml(node, walkFn);
+      }
+    });
+    return h;
+  }
+
+  // Testo poetico: <lg>/<l>
+  Array.from(div.getElementsByTagNameNS(NS,"lg")).forEach(lg => {
+    if (lg.parentNode.localName === "lg") return;
+    h += '<div class="tei-lg">';
+    Array.from(lg.getElementsByTagNameNS(NS,"l")).forEach(l => {
+      h += `<div class="tei-l"><span class="line-n">${l.getAttribute("n")||""}</span>${walkFn(l)}</div>`;
+    });
+    h += "</div>";
+  });
+
+  // Fallback: <l> direttamente nel div
+  if (!h) {
+    Array.from(div.getElementsByTagNameNS(NS,"l")).forEach(l => {
+      h += `<div class="tei-lg"><div class="tei-l"><span class="line-n">${l.getAttribute("n")||""}</span>${walkFn(l)}</div></div>`;
+    });
+  }
+  return h;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DIPLOMATICA
+═══════════════════════════════════════════════════════════════ */
+function buildDiplomatica() {
+  walkState.currentSurface = '';
+  walkState.showSurfaceLabel = false;
+  const div = getDiv("diplomatic");
+  if (!div) return;
+  const html = buildLgHtml(div, walkDiplomatic);
+
+  // Rileva elementi presenti nel TEI
+  const hasAbbr     = div.getElementsByTagNameNS(NS,"abbr").length > 0 ||
+                      Array.from(div.getElementsByTagNameNS(NS,"choice"))
+                        .some(c => c.getElementsByTagNameNS(NS,"abbr").length > 0);
+  const hasAdd      = div.getElementsByTagNameNS(NS,"add").length > 0;
+  const hasDel      = div.getElementsByTagNameNS(NS,"del").length > 0;
+  const hasDamage   = div.getElementsByTagNameNS(NS,"damage").length > 0;
+  const hasSupplied = div.getElementsByTagNameNS(NS,"supplied").length > 0;
+
+  const hasReg = div.getElementsByTagNameNS(NS,"orig").length > 0;
+  const items = [];
+  if (hasAbbr)     items.push(`<span class="legend-item"><span style="font-style:italic;border-bottom:1px dotted #999;font-family:'Source Serif 4',serif">abbr̃</span>&nbsp;Abbreviazione</span>`);
+  if (hasReg)      items.push(`<span class="legend-item"><span style="font-style:normal;border-bottom:1px dotted #999;font-family:'Source Serif 4',serif">orig</span>&nbsp;Forma originale</span>`);
+  if (hasAdd)      items.push(`<span class="legend-item"><span style="color:var(--dipl-add);font-size:0.85em;vertical-align:super">↑add</span>&nbsp;Aggiunta</span>`);
+  if (hasDel)      items.push(`<span class="legend-item"><span style="color:var(--dipl-del);text-decoration:line-through">del</span>&nbsp;Cancellatura</span>`);
+  if (hasDamage)   items.push(`<span class="legend-item"><span style="color:var(--dipl-damage)">†lac†</span>&nbsp;Danno/lacuna</span>`);
+  if (hasSupplied) items.push(`<span class="legend-item"><span style="color:var(--dipl-damage)">⟨int⟩</span>&nbsp;Integrazione</span>`);
+
+  const legendHtml = items.length > 0
+    ? `<span class="legend-label">Legenda</span>${items.join("")}`
+    : "";
+
+  ["L","R"].forEach(col => {
+    document.getElementById(`dipl-text-${col}`).innerHTML = html;
+    const legendEl = document.getElementById(`legend-dipl-${col}`);
+    legendEl.innerHTML = legendHtml;
+    legendEl.style.display = items.length > 0 ? "" : "none";
+  });
+}
+
+function walkDiplomatic(node) {
+  return walkNodes(node.childNodes, {
+    text:     t => smartQuotes(t.textContent),
+    choice:   n => {
+      const abbr  = n.getElementsByTagNameNS(NS,"abbr")[0];
+      const expan = n.getElementsByTagNameNS(NS,"expan")[0];
+      if (abbr) return `<span class="dipl-abbr" title="${expan ? 'Espansione: '+smartQuotes(expan.textContent.trim()) : ''}">${smartQuotes(abbr.textContent)}</span>`;
+      const orig = n.getElementsByTagNameNS(NS,"orig")[0];
+      const reg  = n.getElementsByTagNameNS(NS,"reg")[0];
+      const regText = reg ? smartQuotes(reg.textContent.trim()) : '';
+      const regTitle = reg ? (regText ? 'Forma regolarizzata: '+regText : 'Forma regolarizzata: omesso') : '';
+      if (orig) return `<span class="dipl-reg" title="${regTitle}">${smartQuotes(orig.textContent)}</span>`;
+      const sic = n.getElementsByTagNameNS(NS,"sic")[0];
+      return sic ? smartQuotes(sic.textContent) : smartQuotes(n.textContent);
+    },
+    abbr:     n => `<span class="dipl-abbr">${smartQuotes(n.textContent)}</span>`,
+    add:      n => { const p = n.getAttribute("place")||"above"; return `<span class="dipl-add" data-place="${p}" title="Aggiunta (${p})">${smartQuotes(n.textContent)}</span>`; },
+    del:      n => `<span class="dipl-del" title="Cancellato">${smartQuotes(n.textContent)}</span>`,
+    damage:   n => `<span class="dipl-damage" title="Danno materiale">${walkDiplomatic(n)}</span>`,
+    supplied: n => `<span class="dipl-supplied" title="Integrazione${n.getAttribute('reason') ? ': '+n.getAttribute('reason') : ''}">${smartQuotes(n.textContent)}</span>`,
+    pb:       n => { walkState.currentSurface = (n.getAttribute('facs')||'').replace('#',''); walkState.showSurfaceLabel = true; return ''; },
+    lb:       n => {
+      const num  = n.getAttribute('n') || '';
+      const facs = (n.getAttribute('facs') || '').replace('#','') || walkState.currentSurface;
+      const surf = facs && (zoneIndex[facs] || surfaceIndex[facs]);
+      const lbl  = surf ? (zoneIndex[facs]?.surfaceN || surfaceIndex[facs]?.surfaceN || '') : '';
+      const showLabel = walkState.showSurfaceLabel && surf && lbl;
+      if (showLabel) walkState.showSurfaceLabel = false;
+      const facsBtn = showLabel
+        ? `<sup class="lb-facs" onclick="jumpToFacs('${facs}',event)" title="c. ${lbl}">${lbl}</sup>`
+        : '';
+      return `<br><span class="line-n" style="position:static;width:auto;display:inline;margin-right:.4em">${num}</span>${facsBtn}`;
+    },
+    seg:      n => walkDiplomatic(n),
+    ab:       n => walkDiplomatic(n),
+    p:        n => `<p class="tei-prose-p">${walkDiplomatic(n)}</p>`,
+    default:  n => smartQuotes(n.textContent),
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INTERPRETATIVA
+═══════════════════════════════════════════════════════════════ */
+function buildInterpAutoWithMilestones(diplDiv) {
+  const milestones = Array.from(diplDiv.getElementsByTagNameNS(NS,"milestone"))
+    .filter(m => m.getAttribute("unit") === "verse");
+  if (!milestones.length) return null;
+
+  let segments = [];
+  let currentText = '';
+
+  function walkForMilestone(node) {
+    if (node.nodeType === 3) { currentText += smartQuotes(node.textContent); return; }
+    const tag = node.localName;
+    if (tag === 'milestone' && node.getAttribute('unit') === 'verse') {
+      segments.push(currentText.trim());
+      currentText = '';
+      return;
+    }
+    if (tag === 'pb') { walkState.currentSurface = (node.getAttribute('facs')||'').replace('#',''); return; }
+    if (tag === 'lb') { currentText += ' '; return; }
+    if (tag === 'choice') {
+      const expan = node.getElementsByTagNameNS(NS,"expan")[0];
+      if (expan) { currentText += smartQuotes(expan.textContent); return; }
+      const reg = node.getElementsByTagNameNS(NS,"reg")[0];
+      if (reg)  {
+        // Processa i figli di reg per gestire <hi> e altri elementi inline
+        Array.from(reg.childNodes).forEach(child => walkForMilestone(child));
+        return;
+      }
+      currentText += smartQuotes(node.textContent); return;
+    }
+    if (tag === 'del') return;
+    if (tag === 'hi') {
+      const r = node.getAttribute('rend');
+      if (r === 'italic') { currentText += `<em>${smartQuotes(node.textContent)}</em>`; return; }
+      if (r === 'bold')   { currentText += `<strong>${smartQuotes(node.textContent)}</strong>`; return; }
+      currentText += smartQuotes(node.textContent); return;
+    }
+    if (node.nodeType === 1) Array.from(node.childNodes).forEach(walkForMilestone);
+  }
+
+  const container = diplDiv.getElementsByTagNameNS(NS,"ab")[0] || diplDiv;
+  Array.from(container.childNodes).forEach(walkForMilestone);
+  if (currentText.trim()) segments.push(currentText.trim());
+  if (!segments.length) return null;
+
+  let h = '<div class="tei-lg">';
+  segments.forEach((seg, i) => {
+    if (seg) h += `<div class="tei-l"><span class="line-n">${i+1}</span>${seg}</div>`;
+  });
+  h += '</div>';
+  return h;
+}
+
+function buildInterpretativa() {
+  walkState.currentSurface = '';
+  walkState.showSurfaceLabel = false;
+  const interpDiv = getDiv("interpretative");
+  if (!interpDiv) return;
+
+  const hasContent = interpDiv.getElementsByTagNameNS(NS,"l").length > 0 ||
+                     interpDiv.getElementsByTagNameNS(NS,"p").length > 0;
+
+  let html, legendNote;
+  if (hasContent) {
+    html       = buildLgHtml(interpDiv, walkInterpManual);
+    legendNote = "Trascrizione interpretativa compilata manualmente";
+  } else {
+    const diplDiv = getDiv("diplomatic");
+    if (!diplDiv) return;
+    const milestoneHtml = buildInterpAutoWithMilestones(diplDiv);
+    if (milestoneHtml) {
+      html       = milestoneHtml;
+      legendNote = "Generata automaticamente dall\u2019edizione diplomatica (scansione in versi da milestone)";
+    } else {
+      html       = buildLgHtml(diplDiv, walkInterpAuto);
+      legendNote = "Generata automaticamente dall\u2019edizione diplomatica";
+    }
+  }
+
+  // Rileva correzioni editoriali nel div sorgente
+  const srcDiv = hasContent ? interpDiv : (getDiv("diplomatic") || interpDiv);
+  const hasCorr = Array.from(srcDiv.getElementsByTagNameNS(NS,"choice"))
+    .some(c => c.getElementsByTagNameNS(NS,"corr").length > 0);
+
+  const interpItems = [];
+  if (hasCorr) interpItems.push(`<span class="legend-item"><span class="interp-corr" style="font-family:'Source Serif 4',serif">corr</span>&nbsp;Correzione editoriale</span>`);
+
+  // La nota sul metodo è sempre presente se c'è testo
+  const legendHtml = `<span class="legend-item" style="color:var(--muted)">${legendNote}</span>${interpItems.join("")}`;
+
+  ["L","R"].forEach(col => {
+    document.getElementById(`interp-text-${col}`).innerHTML = html;
+    const legendEl = document.getElementById(`legend-interp-${col}`);
+    legendEl.innerHTML = `<span class="legend-label">Legenda</span>${legendHtml}`;
+    // Nasconde la legenda se non c'è nulla da segnalare (solo nota metodo senza elementi)
+    legendEl.style.display = interpItems.length > 0 ? "" : "none";
+  });
+}
+
+function walkInterpAuto(node) {
+  return walkNodes(node.childNodes, {
+    text:     t => smartQuotes(t.textContent),
+    choice:   n => {
+      const expan = n.getElementsByTagNameNS(NS,"expan")[0];
+      if (expan) return smartQuotes(expan.textContent);
+      const reg  = n.getElementsByTagNameNS(NS,"reg")[0];
+      const orig = n.getElementsByTagNameNS(NS,"orig")[0];
+      if (reg) return `<span class="interp-corr" title="Ms.: ${orig ? smartQuotes(orig.textContent.trim()) : ''}">${walkInterpAuto(reg)}</span>`;
+      const corr = n.getElementsByTagNameNS(NS,"corr")[0];
+      const sic  = n.getElementsByTagNameNS(NS,"sic")[0];
+      if (corr) return `<span class="interp-corr" title="Ms.: ${sic?.textContent||''}">${smartQuotes(corr.textContent)}</span>`;
+      return smartQuotes(n.textContent);
+    },
+    abbr:     n => smartQuotes(n.textContent),
+    add:      n => smartQuotes(n.textContent),
+    del:      ()=> "",
+    damage:   n => walkInterpAuto(n),
+    supplied: n => smartQuotes(n.textContent),
+    seg:      n => walkInterpAuto(n),
+    ab:       n => walkInterpAuto(n),
+    pb:       n => { walkState.currentSurface = (n.getAttribute('facs')||'').replace('#',''); walkState.showSurfaceLabel = true; return ''; },
+    lb:       n => {
+      const facs = (n.getAttribute('facs') || '').replace('#','') || walkState.currentSurface;
+      const surf = facs && (zoneIndex[facs] || surfaceIndex[facs]);
+      const lbl  = surf ? (zoneIndex[facs]?.surfaceN || surfaceIndex[facs]?.surfaceN || '') : '';
+      const showLabel = walkState.showSurfaceLabel && surf && lbl;
+      if (showLabel) walkState.showSurfaceLabel = false;
+      const facsBtn = showLabel
+        ? `<sup class="lb-facs" onclick="jumpToFacs('${facs}',event)" title="c. ${lbl}">${lbl}</sup>`
+        : '';
+      return `<span class="lb-marker" title="Cambio di riga nel ms."> | </span>${facsBtn}`;
+    },
+    hi:       n => { const r=n.getAttribute('rend')||''; const t=walkInterpAuto(n); return r==='italic'?`<em>${t}</em>`:r==='bold'?`<strong>${t}</strong>`:t; },
+    p:        n => `<p class="tei-prose-p">${walkInterpAuto(n)}</p>`,
+    default:  n => smartQuotes(n.textContent),
+  });
+}
+
+function walkInterpManual(node) {
+  return walkNodes(node.childNodes, {
+    text:    t => smartQuotes(t.textContent),
+    choice:  n => {
+      const reg  = n.getElementsByTagNameNS(NS,"reg")[0];
+      const orig = n.getElementsByTagNameNS(NS,"orig")[0];
+      if (reg) return `<span class="interp-corr" title="Ms.: ${orig ? smartQuotes(orig.textContent.trim()) : ''}">${walkInterpManual(reg)}</span>`;
+      const corr = n.getElementsByTagNameNS(NS,"corr")[0];
+      const sic  = n.getElementsByTagNameNS(NS,"sic")[0];
+      if (corr) return `<span class="interp-corr" title="Ms.: ${sic?.textContent||''}">${smartQuotes(corr.textContent)}</span>`;
+      return smartQuotes(n.textContent);
+    },
+    pb:      n => { walkState.currentSurface = (n.getAttribute('facs')||'').replace('#',''); walkState.showSurfaceLabel = true; return ''; },
+    lb:      n => {
+      const facs = (n.getAttribute('facs') || '').replace('#','') || walkState.currentSurface;
+      const surf = facs && (zoneIndex[facs] || surfaceIndex[facs]);
+      const lbl  = surf ? (zoneIndex[facs]?.surfaceN || surfaceIndex[facs]?.surfaceN || '') : '';
+      const showLabel = walkState.showSurfaceLabel && surf && lbl;
+      if (showLabel) walkState.showSurfaceLabel = false;
+      const facsBtn = showLabel
+        ? `<sup class="lb-facs" onclick="jumpToFacs('${facs}',event)" title="c. ${lbl}">${lbl}</sup>`
+        : '';
+      return `<span class="lb-marker" title="Cambio di riga nel ms."> | </span>${facsBtn}`;
+    },
+    seg:     n => walkInterpManual(n),
+    ab:      n => walkInterpManual(n),
+    hi:      n => { const r=n.getAttribute('rend')||''; const t=walkInterpManual(n); return r==='italic'?`<em>${t}</em>`:r==='bold'?`<strong>${t}</strong>`:t; },
+    p:       n => `<p class="tei-prose-p">${walkInterpManual(n)}</p>`,
+    default: n => smartQuotes(n.textContent),
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TESTO CRITICO
+═══════════════════════════════════════════════════════════════ */
+function buildTesto() {
+  const div = getDiv("edition");
+  if (!div) return;
+
+  commentData = Array.from(div.getElementsByTagNameNS(NS,"note")).map(n => ({
+    target: (n.getAttribute("target")||"").replace("#",""),
+    html:   renderNoteContent(n),
+  }));
+  const noteTargets = new Set(commentData.map(d => d.target));
+  let idx = 1;
+  noteIndexMap = {};
+  (function walk(node) {
+    if (node.nodeType !== 1) return;
+    const id = node.getAttribute("xml:id");
+    if (node.localName === "seg" && id && noteTargets.has(id) && !noteIndexMap[id])
+      noteIndexMap[id] = idx++;
+    Array.from(node.childNodes).forEach(walk);
+  })(div);
+
+  const html = buildLgHtml(div, walkTesto);
+  ["L","R"].forEach(col =>
+    document.getElementById(`out-testo-${col}`).innerHTML = html
+  );
+  bindTestoEvents();
+}
+
+/** Renderizza il contenuto di una <note> con smartquotes e markup inline */
+function renderNoteContent(noteNode) {
+  let h = "";
+  noteNode.childNodes.forEach(c => {
+    if (c.nodeType === 3) {
+      h += smartQuotes(c.textContent);
+    } else if (c.nodeType === 1) {
+      if (c.localName === "em" || c.localName === "hi") {
+        h += `<em>${smartQuotes(c.textContent)}</em>`;
+      } else if (c.localName === "p") {
+        h += `<p style="margin:0 0 0.5rem">${smartQuotes(renderNoteContent(c))}</p>`;
+      } else {
+        h += smartQuotes(c.textContent);
+      }
+    }
+  });
+  return h;
+}
+
+function walkTesto(node) {
+  return walkNodes(node.childNodes, {
+    text:   t => smartQuotes(t.textContent),
+    seg:    n => {
+      const sid = n.getAttribute("xml:id");
+      const ni  = noteIndexMap[sid] || "";
+      const marker = ni ? `<sup class="note-marker" data-seg-id="${sid}">${ni}</sup>` : "";
+      return `<span class="tei-seg" data-seg-id="${sid}">${smartQuotes(n.textContent)}</span>${marker}`;
+    },
+    choice: n => {
+      const expan = n.getElementsByTagNameNS(NS,"expan")[0];
+      const corr  = n.getElementsByTagNameNS(NS,"corr")[0];
+      return smartQuotes((expan||corr||n).textContent);
+    },
+    add:    n => smartQuotes(n.textContent),
+    del:    ()=> "",
+    note:   ()=> "",
+    hi:     n => { const r=n.getAttribute('rend')||''; const t=walkTesto(n); return r==='italic'?`<em>${t}</em>`:r==='bold'?`<strong>${t}</strong>`:t; },
+    p:      n => `<p class="tei-prose-p">${walkTesto(n)}</p>`,
+    default:n => smartQuotes(n.textContent),
+  });
+}
+
+function bindTestoEvents() {
+  document.body.addEventListener("click", e => {
+    const marker = e.target.closest(".note-marker, .tei-seg");
+    if (marker) {
+      const sid    = marker.dataset.segId;
+      const srcCol = colOf(marker);
+      if (sid && srcCol) {
+        clearHighlights();
+        document.querySelectorAll(`.note-marker[data-seg-id="${sid}"]`).forEach(el => el.classList.add("hl"));
+        document.querySelectorAll(`.tei-seg[data-seg-id="${sid}"]`).forEach(el => el.classList.add("hl"));
+        const tgt = otherCol(srcCol);
+        ensurePaneVisible(tgt, "commento");
+        const ne = document.getElementById(`note-${tgt}-${sid}`);
+        if (ne) {
+          ne.classList.add("hl");
+          setTimeout(() => ne.scrollIntoView({ behavior:"smooth", block:"center" }), 120);
+        }
+      }
+      return;
+    }
+    if (!e.target.closest(".note-entry")) clearHighlights();
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMMENTO
+═══════════════════════════════════════════════════════════════ */
+function buildCommento() {
+  if (commentData.length === 0) return;
+  ["L","R"].forEach(col => {
+    let h = "";
+    commentData.forEach(nd => {
+      const ni = noteIndexMap[nd.target] || "";
+      h += `<div class="note-entry" id="note-${col}-${nd.target}" data-note-target="${nd.target}">
+              <div class="note-marker-label"><sup>${ni}</sup> Nota di commento</div>
+              <div style="line-height:1.75">${nd.html}</div>
+            </div>`;
+    });
+    if (!h) h = '<div style="padding:20px;color:#aaa;font-size:13px;font-style:italic">Nessuna nota.</div>';
+    document.getElementById(`out-commento-${col}`).innerHTML = h;
+
+    document.querySelectorAll(`#out-commento-${col} .note-entry`).forEach(entry => {
+      entry.addEventListener("click", () => {
+        const sid = entry.dataset.noteTarget;
+        clearHighlights();
+        document.querySelectorAll(`.note-marker[data-seg-id="${sid}"]`).forEach(el => el.classList.add("hl"));
+        document.querySelectorAll(`.tei-seg[data-seg-id="${sid}"]`).forEach(el => el.classList.add("hl"));
+        entry.classList.add("hl");
+        const tgt = otherCol(col);
+        ensurePaneVisible(tgt, "testo");
+        setTimeout(() => {
+          document.querySelector(`#out-testo-${tgt} .note-marker[data-seg-id="${sid}"]`)
+            ?.scrollIntoView({ behavior:"smooth", block:"center" });
+        }, 120);
+      });
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TRADUZIONE
+═══════════════════════════════════════════════════════════════ */
+function buildTraduzione() {
+  const div = getDiv("translation");
+  if (!div) return;
+  function walkTrad(node) {
+    return walkNodes(node.childNodes, {
+      text:    t => smartQuotes(t.textContent),
+      hi:      n => { const r=n.getAttribute('rend')||''; const t=walkTrad(n); return r==='italic'?`<span style="font-style:normal">${t}</span>`:r==='bold'?`<strong>${t}</strong>`:t; },
+      p:       n => `<p class="tei-prose-p" style="font-style:italic;color:#4b5563">${walkTrad(n)}</p>`,
+      default: n => smartQuotes(n.textContent),
+    });
+  }
+  const html = buildLgHtml(div, walkTrad);
+  ["L","R"].forEach(col =>
+    document.getElementById(`out-traduzione-${col}`).innerHTML = html
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FACSIMILE — MIRADOR IIIF
+   Strategia (ispirata all'approccio Gemini):
+   · Mirador riceve loadedManifest come URL diretto — gestisce
+     autonomamente il fetch, senza CORS lato JS.
+   · canvasIndex iniziale calcolato dai nomi foglio nel TEI
+     (<surface n="49v">) cercando nell'URL della canvas.
+   · Dopo il caricamento, un subscriber Redux intercetta ogni
+     navigazione e la blocca se esce dall'intervallo TEI.
+   · I pulsanti della toolbar chiamano direttamente lo store
+     Redux di Mirador (stessa tecnica di Gemini per canvasIndex).
+═══════════════════════════════════════════════════════════════ */
+
+const MIRADOR_EL = { L: "mirador-mount-L", R: "mirador-mount-R" };
+
+function buildFacsimileContainers() {
+  const surfaces = Array.from(xml.getElementsByTagNameNS(NS,"surface"));
+  if (surfaces.length === 0) return;
+
+  // pages: array di { n, corresp, manifestUrl } letti dalle <zone> di ogni <surface>
+  const pages = [];
+  surfaces.forEach(s => {
+    const manifestUrl = s.getElementsByTagNameNS(NS,"graphic")[0]?.getAttribute("url") || "";
+    const zones = Array.from(s.getElementsByTagNameNS(NS,"zone"));
+    if (zones.length === 0) {
+      // Nessuna zona: usa la surface stessa (retrocompatibilità)
+      pages.push({ n: s.getAttribute("n") || "", corresp: "", manifestUrl });
+    } else {
+      zones.forEach(z => {
+        pages.push({
+          n:          z.getAttribute("n")       || "",
+          corresp:    z.getAttribute("corresp") || "",
+          manifestUrl,
+        });
+      });
+    }
+  });
+
+  ["L","R"].forEach(col => {
+    document.getElementById(`out-facsimile-${col}`).innerHTML = `
+      <div class="fac-wrapper">
+        <div class="fac-toolbar">
+          <div style="display:flex;align-items:center;gap:6px">
+            <button class="fac-btn" id="fac-first-${col}" onclick="facPage('${col}','first')" title="Prima carta">
+              <span class="material-symbols-outlined">first_page</span>Inizio
+            </button>
+            <button class="fac-btn" id="fac-prev-${col}" onclick="facPage('${col}','prev')" title="Carta precedente">
+              <span class="material-symbols-outlined">chevron_left</span>Prec.
+            </button>
+          </div>
+          <div style="position:relative" id="fac-dropdown-wrap-${col}">
+            <button id="fac-page-${col}"
+              onclick="facToggleDropdown('${col}')"
+              style="font-family:'Source Sans 3',sans-serif;font-size:11px;font-weight:800;
+                     letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);
+                     background:white;border:1px solid var(--border);border-radius:5px;
+                     padding:5px 12px;cursor:pointer;min-width:72px;
+                     display:flex;align-items:center;gap:6px;transition:border-color .15s"
+              onmouseover="this.style.borderColor='var(--accent)'"
+              onmouseout="this.style.borderColor='var(--border)'"
+              title="Scegli carta">
+              <span id="fac-page-label-${col}">–</span>
+              <span class="material-symbols-outlined"
+                style="font-size:14px;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 20;
+                       opacity:.6">expand_more</span>
+            </button>
+            <div id="fac-select-${col}"
+              style="display:none;position:absolute;top:calc(100% + 4px);left:50%;
+                     transform:translateX(-50%);background:white;border:1px solid var(--border);
+                     border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.1);
+                     z-index:100;min-width:100%;overflow:hidden">
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <button class="fac-btn" id="fac-next-${col}" onclick="facPage('${col}','next')" title="Carta successiva">
+              Succ.<span class="material-symbols-outlined">chevron_right</span>
+            </button>
+            <button class="fac-btn" id="fac-last-${col}" onclick="facPage('${col}','last')" title="Ultima carta">
+              Fine<span class="material-symbols-outlined">last_page</span>
+            </button>
+          </div>
+        </div>
+        <div class="fac-mirador-container" id="fac-cont-${col}">
+          <div class="fac-loading" id="fac-loading-${col}">
+            <div class="fac-spinner"></div>
+            <div class="fac-loading-text">Caricamento facsimile…</div>
+          </div>
+          <div id="${MIRADOR_EL[col]}" style="width:100%;height:100%;position:absolute;inset:0"></div>
+        </div>
+      </div>`;
+
+    miradorState[col].pages   = pages;
+    miradorState[col].pageIdx = 0;
+  });
+}
+
+/* ── Avvia Mirador (idempotente) ── */
+function initMiradorForCol(col) {
+  const st = miradorState[col];
+  if (!st.pages.length) return;
+  if (st.initialized) return;
+  st.initialized = true;
+  mountMirador(col);
+}
+
+function hideMiradorLoading(col) {
+  const el = document.getElementById(`fac-loading-${col}`);
+  if (el) el.style.display = "none";
+}
+
+function showMiradorError(col, msg) {
+  const el = document.getElementById(`fac-loading-${col}`);
+  if (!el) return;
+  el.innerHTML = `
+    <div style="text-align:center;padding:32px 24px;color:var(--muted);max-width:360px;margin:auto">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;color:var(--dipl-damage)">Facsimile non disponibile</div>
+      <div style="font-size:11px;line-height:1.7;margin-bottom:14px">${msg}</div>
+      <div style="font-size:10px;line-height:1.7;background:var(--bg-panel);border:1px solid var(--border);border-radius:5px;padding:12px;text-align:left">
+        <strong style="display:block;margin-bottom:4px;color:var(--text)">Come risolvere:</strong>
+        Apri il progetto con un server locale.<br>
+        In VS Code: <em>Live Server</em> → tasto destro su <code>diplomatica-testo.html</code>
+        → <em>Open with Live Server</em>.
+      </div>
+    </div>`;
+}
+
+/* ── Monta Mirador: fetch manifest → filtra canvas → Blob URL ── */
+async function mountMirador(col) {
+  const st          = miradorState[col];
+  const manifestUrl = st.pages[0]?.manifestUrl;
+  if (!manifestUrl) { showMiradorError(col, "Nessun manifest IIIF nel TEI."); return; }
+
+  // ── 1. Scarica il manifest ───────────────────────────────────────────────
+  let sourceManifest;
+  try {
+    const r = await fetch(manifestUrl, {
+      headers: { Accept: "application/json, application/ld+json" }
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    sourceManifest = await r.json();
+  } catch(e) {
+    showMiradorError(col, `Manifest non raggiungibile: ${e.message}`);
+    return;
+  }
+
+  // ── 2. Filtra le canvas corrispondenti ai fogli TEI ─────────────────────
+  const allCanvases = extractCanvasesFromManifest(sourceManifest);
+  if (!allCanvases.length) { showMiradorError(col, "Nessuna canvas nel manifest."); return; }
+
+  const wantedNs      = st.pages.map(p => p.n.toLowerCase());
+  const foundCanvases = filterCanvasesByFolio(allCanvases, wantedNs);
+  const finalCanvases = foundCanvases.length === wantedNs.length
+    ? foundCanvases
+    : allCanvases.slice(0, wantedNs.length);
+
+  st.canvases      = finalCanvases;
+  st.canvasIndexes = finalCanvases.map((_, i) => i); // 0,1,... nel manifest ridotto
+  st.pageIdx       = 0;
+
+  // ── 3. Manifest ridotto → Blob URL ──────────────────────────────────────
+  const reduced = buildReducedManifest(sourceManifest, finalCanvases);
+  if (st.blobUrl) URL.revokeObjectURL(st.blobUrl);
+  st.blobUrl = URL.createObjectURL(
+    new Blob([JSON.stringify(reduced)], { type: "application/json" })
+  );
+
+  // ── 4. Monta Mirador sul Blob URL ────────────────────────────────────────
+  hideMiradorLoading(col);
+
+  st.viewer = Mirador.viewer({
+    id: MIRADOR_EL[col],
+    windows: [{
+      id:                          `win-${col}`,
+      loadedManifest:              st.blobUrl,
+      canvasIndex:                 0,
+      view:                        "single",
+      thumbnailNavigationPosition: "off",
+      allowClose:                  false,
+      allowMaximize:               false,
+      allowTopMenuButton:          false,
+      hideWindowTitle:             true,
+      sideBarOpenByDefault:        false,
+    }],
+    workspace: {
+      showZoomControls:      true,
+      type:                  "mosaic",
+      isWorkspaceAddVisible: false,
+    },
+    workspaceControlPanel: { enabled: false },
+    thumbnailNavigation:   { defaultPosition: "off" },
+    window: {
+      allowMaximize:        false,
+      allowClose:           false,
+      allowTopMenuButton:   false,
+      sideBarOpenByDefault: false,
+      hideWindowTitle:      true,
+    },
+  });
+
+  // ── 5. Subscriber: sincronizza toolbar con navigazione interna Mirador ──
+  installStoreSync(col);
+  updateFacNav(col);
+
+}
+
+
+/**
+ * Installa listener sui pulsanti DOM nativi di Mirador.
+ * Lo store con Blob URL non aggiorna canvasIndex in modo affidabile,
+ * quindi tracciamo la posizione direttamente su st.pageIdx.
+ */
+function installStoreSync(col) {
+  const st        = miradorState[col];
+  const container = document.getElementById(MIRADOR_EL[col]);
+  if (!container || st.storeSubscribed) return;
+  st.storeSubscribed = true;
+
+  // Polling finché i pulsanti sono nel DOM
+  const poll = setInterval(() => {
+    const btnNext = container.querySelector('button[aria-label="Next item"]');
+    const btnPrev = container.querySelector('button[aria-label="Previous item"]');
+    if (!btnNext || !btnPrev) return;
+    clearInterval(poll);
+
+    btnNext.addEventListener('click', () => {
+      if (st.pageIdx < st.canvases.length - 1) {
+        st.pageIdx++;
+        setTimeout(() => updateFacNav(col), 80);
+      }
+    });
+
+    btnPrev.addEventListener('click', () => {
+      if (st.pageIdx > 0) {
+        st.pageIdx--;
+        setTimeout(() => updateFacNav(col), 80);
+      }
+    });
+  }, 100);
+}
+
+/** Legge pageIdx corrente (non dallo store, inaffidabile con Blob URL) */
+function getCurrentAbsIndex(col) {
+  return miradorState[col].pageIdx ?? 0;
+}
+
+/** Sincronizza toolbar dopo navigazione programmatica */
+function syncAfterNativeNav(col) {
+  updateFacNav(col);
+}
+
+
+
+/** Estrae le canvas direttamente da un oggetto manifest JSON (IIIF v2 o v3) */
+function extractCanvasesFromManifest(manifest) {
+  if (manifest.items) return manifest.items;                           // IIIF v3
+  if (manifest.sequences?.[0]?.canvases) return manifest.sequences[0].canvases; // IIIF v2
+  return [];
+}
+
+/**
+ * Per ogni nome foglio (es. "49v") cerca la canvas corrispondente
+ * confrontando la label esatta (formato VAT: "49v", "50r", ecc.).
+ * Matching: label esatta > label che inizia con n > label che contiene n.
+ */
+function filterCanvasesByFolio(canvases, wantedNs) {
+  console.log('[IIIF] wantedNs:', wantedNs);
+  console.log('[IIIF] prime 5 labels:', canvases.slice(0,5).map(c => getCanvasLabel(c)));
+  return wantedNs.map(n => {
+    let found = canvases.find(c => getCanvasLabel(c).toLowerCase() === n);
+    if (!found) found = canvases.find(c => getCanvasLabel(c).toLowerCase().startsWith(n));
+    if (!found) found = canvases.find(c => getCanvasLabel(c).toLowerCase().includes(n));
+    console.log('[IIIF] cercando', JSON.stringify(n), '→', found ? getCanvasLabel(found) : 'NON TROVATO');
+    return found;
+  }).filter(Boolean);
+}
+
+/**
+ * Costruisce un manifest minimo con solo le canvas selezionate.
+ * Mantiene il formato originale: v2 se il source è v2, v3 se è v3.
+ */
+function buildReducedManifest(source, canvases) {
+  const label = source.label || source["@label"] || "Facsimile";
+  const labelStr = typeof label === "object"
+    ? (Object.values(label)[0]?.[0] || "Facsimile")
+    : label;
+
+  // IIIF v3: usa items invece di sequences
+  if (source.items || source["@context"]?.includes?.("3/context.json")) {
+    return {
+      "@context": "http://iiif.io/api/presentation/3/context.json",
+      "id":       source.id || source["@id"] || "https://example.org/reduced",
+      "type":     "Manifest",
+      "label":    typeof label === "object" ? label : { "none": [labelStr] },
+      "items":    canvases,
+      "metadata": source.metadata || [],
+    };
+  }
+
+  // IIIF v2
+  return {
+    "@context":  "http://iiif.io/api/presentation/2/context.json",
+    "@id":       source["@id"] || "https://example.org/reduced",
+    "@type":     "sc:Manifest",
+    "label":     labelStr,
+    "sequences": [{
+      "@type":    "sc:Sequence",
+      "@id":      (source["@id"] || "https://example.org") + "/sequence/normal",
+      "canvases": canvases,
+    }],
+    "metadata":  source.metadata || [],
+  };
+}
+
+/** Recupera la label testuale di una canvas (IIIF v2 e v3) */
+function getCanvasLabel(canvas) {
+  const lbl = canvas.label;
+  if (!lbl) return "";
+  if (typeof lbl === "string") return lbl;
+  if (typeof lbl === "object") {
+    // IIIF v3: { none: ["1r"] } oppure { en: ["1r"] }
+    const vals = Object.values(lbl);
+    const first = vals[0];
+    if (Array.isArray(first)) return first[0] || "";
+    return first || "";
+  }
+  return "";
+}
+
+/** Recupera il service URL dell'immagine IIIF da una canvas */
+function getCanvasImageService(canvas) {
+  // IIIF v3
+  const body = canvas.items?.[0]?.items?.[0]?.body;
+  if (body?.service) {
+    const svc = Array.isArray(body.service) ? body.service[0] : body.service;
+    return svc["@id"] || svc.id || null;
+  }
+  // IIIF v2
+  const img = canvas.images?.[0]?.resource;
+  if (img?.service) return img.service["@id"] || img.service.id || null;
+  return null;
+}
+
+/** Dimensioni di una canvas */
+function getCanvasDimensions(canvas) {
+  return { w: canvas.width || 1000, h: canvas.height || 1000 };
+}
+
+
+
+
+/* ── Navigazione toolbar ── */
+function facPage(col, action) {
+  const st  = miradorState[col];
+  if (!st.canvasIndexes?.length) return;
+  const max    = st.canvasIndexes.length - 1;
+  const before = st.pageIdx;  // salva indice prima della modifica
+
+  if      (action === "first")                  st.pageIdx = 0;
+  else if (action === "last" )                  st.pageIdx = max;
+  else if (action === "prev" && before > 0)     st.pageIdx = before - 1;
+  else if (action === "next" && before < max)   st.pageIdx = before + 1;
+
+  if (st.pageIdx !== before)
+    miradorNavigateTo(col, st.pageIdx, before);
+  else
+    updateFacNav(col);
+}
+
+function updateFacNav(col) {
+  const st    = miradorState[col];
+  const pages = st.pages;
+  const max   = (st.canvasIndexes?.length || pages.length) - 1;
+
+  // Aggiorna label del bottone
+  const label = pages[st.pageIdx]?.n || `${st.pageIdx + 1}`;
+  const labelEl = document.getElementById(`fac-page-label-${col}`);
+  if (labelEl) labelEl.textContent = label;
+
+  // Popola il dropdown (solo la prima volta)
+  const dropdown = document.getElementById(`fac-select-${col}`);
+  if (dropdown && dropdown.children.length === 0) {
+    pages.forEach((p, i) => {
+      const item = document.createElement("button");
+      item.textContent = p.n || `${i + 1}`;
+      item.dataset.idx = i;
+      item.style.cssText = `display:block;width:100%;padding:7px 16px;text-align:center;
+        font-family:'Source Sans 3',sans-serif;font-size:10px;font-weight:700;
+        letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);
+        background:none;border:none;cursor:pointer;transition:all .12s;white-space:nowrap`;
+      item.onmouseover = () => { item.style.background = "var(--accent-light)"; item.style.color = "var(--accent)"; };
+      item.onmouseout  = () => { item.style.background = "none"; item.style.color = "var(--muted)"; };
+      item.onclick = () => { facGoTo(col, i); facCloseDropdown(col); };
+      dropdown.appendChild(item);
+    });
+  }
+  // Evidenzia la voce corrente
+  if (dropdown) {
+    Array.from(dropdown.children).forEach((item, i) => {
+      const active = i === st.pageIdx;
+      item.style.color  = active ? "var(--accent)" : "var(--muted)";
+      item.style.fontWeight = active ? "800" : "700";
+    });
+  }
+
+  ["first","prev"].forEach(k => {
+    const b = document.getElementById(`fac-${k}-${col}`);
+    if (b) b.disabled = st.pageIdx === 0;
+  });
+  ["next","last"].forEach(k => {
+    const b = document.getElementById(`fac-${k}-${col}`);
+    if (b) b.disabled = st.pageIdx === max;
+  });
+}
+
+/**
+ * Naviga a un indice locale (0,1,...) cliccando i pulsanti DOM di Mirador.
+ * Riceve l'indice TARGET e l'indice di PARTENZA separatamente
+ * per evitare che st.pageIdx (già aggiornato dalla toolbar) inganni il delta.
+ */
+function miradorNavigateTo(col, targetLocalIdx, fromIdx) {
+  const st        = miradorState[col];
+  const container = document.getElementById(MIRADOR_EL[col]);
+  if (!container) return;
+
+  const curIdx = (fromIdx !== undefined) ? fromIdx : st.pageIdx;
+  const tgtIdx = targetLocalIdx;
+  if (curIdx === tgtIdx) { updateFacNav(col); return; }
+
+  const delta    = tgtIdx - curIdx;
+  const btnLabel = delta > 0 ? "Next item" : "Previous item";
+  const steps    = Math.abs(delta);
+  let   clicked  = 0;
+
+  const doClick = () => {
+    if (clicked >= steps) { updateFacNav(col); return; }
+    const btn = container.querySelector(`button[aria-label="${btnLabel}"]`);
+    if (btn && !btn.disabled) {
+      btn.click();
+      clicked++;
+      setTimeout(doClick, 120);
+    } else {
+      updateFacNav(col);
+    }
+  };
+  doClick();
+}
+
+/** Apre/chiude il dropdown carta */
+function facToggleDropdown(col) {
+  const dd = document.getElementById(`fac-select-${col}`);
+  if (!dd) return;
+  const isOpen = dd.style.display !== "none";
+  // Chiude tutti gli altri dropdown
+  ["L","R"].forEach(c => facCloseDropdown(c));
+  if (!isOpen) dd.style.display = "block";
+}
+
+function facCloseDropdown(col) {
+  const dd = document.getElementById(`fac-select-${col}`);
+  if (dd) dd.style.display = "none";
+}
+
+// Chiudi dropdown cliccando fuori
+document.addEventListener("click", e => {
+  ["L","R"].forEach(col => {
+    const wrap = document.getElementById(`fac-dropdown-wrap-${col}`);
+    if (wrap && !wrap.contains(e.target)) facCloseDropdown(col);
+  });
+});
+
+/** Navigazione diretta via menu a tendina */
+function facGoTo(col, value) {
+  const st  = miradorState[col];
+  const idx = typeof value === "number" ? value : parseInt(value, 10);
+  if (isNaN(idx)) return;
+  const maxIdx = (st.canvasIndexes?.length || st.pages.length) - 1;
+  const before = st.pageIdx;
+  st.pageIdx = Math.max(0, Math.min(idx, maxIdx));
+  if (st.canvasIndexes?.length && st.pageIdx !== before)
+    miradorNavigateTo(col, st.pageIdx, before);
+  updateFacNav(col);
+}
+
+
+
+/**
+ * Naviga il pannello Facsimile alla carta corrispondente al facs id.
+ * Accetta sia riferimenti a <zone> (con highlight) che a <surface> (solo navigazione).
+ */
+function jumpToFacs(facsId, evt) {
+  // Risolvi: zone o surface?
+  const zone    = zoneIndex[facsId];
+  const surface = surfaceIndex[facsId];
+  const target  = zone || surface;
+  if (!target) return;
+
+  // Determina la colonna di origine dal click
+  const clickedEl = evt ? (evt.target || evt.currentTarget) : null;
+  const originCol = clickedEl ? colOf(clickedEl) : null;
+
+  // Il facsimile va sempre nella colonna OPPOSTA a quella di origine.
+  // Fallback a "R" se l'origine non è determinabile.
+  const destCol = originCol ? otherCol(originCol) : "R";
+
+  // Assicura che la vista edizione sia attiva (layout dual)
+  if (document.getElementById("main-body").classList.contains("layout-single")) {
+    selectView("edition");
+  }
+
+  // Apri il facsimile nella colonna di destinazione senza toccare l'altra
+  switchPane(destCol, "facsimile");
+  initMiradorForCol(destCol);
+
+  // Naviga alla carta
+  const st = miradorState[destCol];
+  const targetLocalIdx = st.pages.findIndex(p => p.n === target.surfaceN);
+  if (targetLocalIdx >= 0 && targetLocalIdx !== st.pageIdx) {
+    const before = st.pageIdx;
+    st.pageIdx   = targetLocalIdx;
+    miradorNavigateTo(destCol, targetLocalIdx, before);
+  }
+
+  // Highlight solo se è una zona con coordinate
+  if (zone && zone.ulx !== undefined)
+    setTimeout(() => highlightZone(destCol, zone), 400);
+}
+
+/**
+ * Evidenzia una zona nel viewer Mirador usando un overlay SVG.
+ * Le coordinate sono in px sulla canvas originale e vengono
+ * scalate alle dimensioni attuali del viewer.
+ */
+function highlightZone(col, zone) {
+  const container = document.getElementById(MIRADOR_EL[col]);
+  if (!container) return;
+
+  // Rimuovi highlight precedente
+  container.querySelectorAll(".facs-zone-highlight").forEach(el => el.remove());
+
+  // Trova il canvas viewer di Mirador
+  const osdEl = container.querySelector(".mirador-canvas-world, canvas, [class*='osd'], [class*='OpenSeaDragon']");
+
+  // Approccio alternativo: overlay assoluto proporzionale
+  // Calcola la posizione dell'immagine nel viewer
+  const store   = miradorState[col].viewer?.store;
+  const canvas  = miradorState[col].canvases?.[miradorState[col].pageIdx];
+  if (!canvas) return;
+
+  const cw = canvas.width  || 1000;
+  const ch = canvas.height || 1000;
+
+  // Crea un overlay SVG sopra il viewer
+  const viewer = container.querySelector(".fac-mirador-container") || container;
+  const vRect  = viewer.getBoundingClientRect();
+
+  const overlay = document.createElementNS("http://www.w3.org/2000/svg","svg");
+  overlay.classList.add("facs-zone-highlight");
+  overlay.setAttribute("viewBox", `0 0 ${cw} ${ch}`);
+  overlay.style.cssText = `
+    position:absolute; inset:0; width:100%; height:100%;
+    pointer-events:none; z-index:20;
+  `;
+
+  const rect = document.createElementNS("http://www.w3.org/2000/svg","rect");
+  rect.setAttribute("x",      zone.ulx);
+  rect.setAttribute("y",      zone.uly);
+  rect.setAttribute("width",  zone.lrx - zone.ulx);
+  rect.setAttribute("height", zone.lry - zone.uly);
+  rect.setAttribute("fill",   "rgba(160,63,51,0.15)");
+  rect.setAttribute("stroke", "var(--accent)");
+  rect.setAttribute("stroke-width", "8");
+  overlay.appendChild(rect);
+
+  viewer.style.position = "relative";
+  viewer.appendChild(overlay);
+
+  // Rimuovi dopo 3 secondi con fade
+  setTimeout(() => {
+    overlay.style.transition = "opacity .5s";
+    overlay.style.opacity = "0";
+    setTimeout(() => overlay.remove(), 500);
+  }, 3000);
+}
+</script>
+</body>
+</html>

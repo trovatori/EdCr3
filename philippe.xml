@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Bestiaire</title>
+        <author>Philippe de Thaün</author>
+        <respStmt>
+          <resp>Edizione digitale</resp>
+          <name>Lorenzo Fabiani</name>
+        </respStmt>
+      </titleStmt>
+      <sourceDesc>
+        <listWit>
+          <witness xml:id="L">London, British Library, Cotton MS Nero A V</witness>
+        </listWit>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+
+  <facsimile>
+    <surface xml:id="L" corresp="#L">
+      <graphic url="https://bl.digirati.io/iiif/ark:/81055/vdc_100062419814.0x000001" mimeType="application/ld+json"/>
+      <zone xml:id="L_41v" n="f.41v"/>
+      <zone xml:id="L_42r" n="f.42r"/>
+    </surface>
+  </facsimile>
+
+  <text>
+    <front>
+      <div type="introduction">
+        <head>Introduzione</head>
+        <p>
+          Si presenta l'edizione dei primi versi del <hi rend="italic">Bestiaire</hi> di Philippe de Thaon,
+          secondo la lezione del manoscritto Cotton MS Nero A V, della British Library di Londra.  
+        </p>
+        <p>
+          Il manoscritto si compone di due unità. La prima (ff. 1r-82v), che dovrebbe provenire dall'abbazia cistercense di Holme Cultram 
+          in Cumbria, è databile alla seconda metà del XII secolo e contiene due opere di
+          Philippe de Thon, nell'ordine il <hi rend="italic">Comput</hi> (ff. 1r-39v) e il <hi rend="italic">Bestiaire</hi> 
+          (ff. 41r-82v): fra le due sono posti due brevi testi latini sul <hi rend="italic">Comput</hi> (ff. 40r-40v). 
+        </p>
+        <p>
+          La seconda unità di cui il manoscritto è composto (ff. 83r-118v), di provenienza sconosciuta,
+          è databile al XIII secolo e contiene un testo latino sulla vita del santo Thomas di Canterbury,
+          a opera di un certo Elias, monaco benedettino dell'abbazia di Evesham (fl. ca 1200).
+        </p>
+        <p>Le due unità, originariamente indipendenti, furono probabilmente raccolte in un solo volume
+          dall'antico possessore, Sir Robert Bruce Cotton (1571-1631).
+        </p>
+        
+      </div>
+      <div type="editorialNote">
+        <head>Nota al testo</head>
+        <p>
+          L'edizione diplomatica riproduce fedelmente il manoscritto L.
+          L'edizione interpretativa è generata automaticamente sciogliendo
+          le abbreviazioni marcate con <em>choice/abbr/expan</em> e
+          accogliendo le aggiunte interlineari.
+        </p>
+        <p>
+          Per la constitutio textus si è seguita la tradizione consolidata
+          degli studi occitanistici. Le correzioni al testo del manoscritto
+          sono segnalate nell'apparato critico e discusse nel commento.
+          Il testo critico rappresenta lo stadio finale dell'elaborazione
+          editoriale e non deve essere confuso con la trascrizione diplomatica.
+        </p>
+      </div>
+      <div type="criteria">
+        <head>Criteri editoriali</head>
+        <p>
+          Abbreviazioni: segnalate con corsivo e sottolineatura puntata;
+          tooltip con lo scioglimento. Aggiunte (↑): in apice verde.
+          Cancellature: testo barrato in rosso. Danni (†…†): in ocra.
+          Integrazioni (⟨…⟩): in ocra.
+        </p>
+        <p>
+          La punteggiatura è moderna e interpretativa. Le divisioni in
+          strofe seguono il modello metrico ricostruito sulla base della
+          tradizione, non la disposizione materiale del manoscritto.
+          I numeri di verso sono continui attraverso l'intero componimento.
+        </p>
+      </div>
+    </front>
+
+    <body>
+
+      <!-- ═══════════════════════════════════════════════
+           EDIZIONE DIPLOMATICA
+      ═══════════════════════════════════════════════ -->
+      <div type="diplomatic">
+        <ab>
+          <pb facs="#L_41v"/>
+          <lb n="3"/>Philippe <choice><abbr>d</abbr><expan>de</expan></choice> <choice><orig>taun.</orig><reg>Taun</reg></choice><milestone unit="verse" n="1"/>
+          <lb n="4"/><choice><orig>enfranceise</orig><reg>en françeise</reg></choice> <choice><orig>raisun.</orig><reg>raisun</reg></choice><milestone unit="verse" n="2"/>
+          <lb n="5"/>ad estrait <choice><orig>bestiaire</orig><reg><hi rend="italic">Bestiaire</hi></reg></choice><choice><orig>.</orig><reg>,</reg></choice> <milestone unit="verse" n="3"/> un <choice><orig>liuere</orig><reg>livere</reg></choice> <choice><abbr>d</abbr><expan>de</expan></choice> <choice><abbr>gmaire</abbr><expan>gramaire</expan></choice><choice><orig>.</orig><reg>,</reg></choice><milestone unit="verse" n="4"/>
+          <lb n="6"/><choice><abbr>p</abbr><expan>pur</expan></choice> <choice><orig>lonur</orig><reg>l'onur</reg></choice> <choice><orig>dune</orig><reg>d'une</reg></choice> <choice><abbr>geme</abbr><expan>gemme</expan></choice><choice><orig>.</orig><reg>,</reg></choice> <milestone unit="verse" n="5"/> ki <choice><abbr>mlt</abbr><expan>mult</expan></choice> <choice><abbr>÷</abbr><expan>est</expan></choice> bele femme<choice><orig>.</orig><reg>:</reg></choice><milestone unit="verse" n="6"/>
+          <lb n="7"/>Aliz <choice><abbr>÷</abbr><expan>est</expan></choice> numee<choice><orig>.</orig><reg>,</reg></choice><milestone unit="verse" n="7"/> reine <choice><abbr>÷</abbr><expan>est</expan></choice> corunee.<milestone unit="verse" n="8"/>
+        </ab>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════
+           EDIZIONE INTERPRETATIVA (vuota = auto-generata)
+      ═══════════════════════════════════════════════ -->
+      <div type="interpretative">
+        
+      </div>
+
+      <!-- ═══════════════════════════════════════════════
+           TESTO CRITICO
+      ═══════════════════════════════════════════════ -->
+      <div type="edition">
+        <lg n="1">
+          <l n="1">
+            Philippe de Taun
+          </l>
+          <l n="2">
+            en françeise raisun
+          </l>
+          <l n="3">
+            ad estrait <hi rend="italic">Bestiaire</hi>,
+          </l>
+          <l n="4">
+            un livere de gramaire,
+          </l>
+          <l n="5">
+            pur l’onur d’une gemme,
+          </l>
+          <l n="6">
+            ki mult est bele femme:
+          </l>
+          <l n="7">
+            Aliz est numee,
+          </l>
+          <l n="8">
+            reine est corunee.
+          </l>
+        </lg>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════
+           TRADUZIONE
+      ═══════════════════════════════════════════════ -->
+      <!-- <div type="translation" xml:lang="it"/> -->
+      <div type="translation" xml:lang="it">
+       <lg n="1">
+            <l n="1">
+              Philippe de Thaon
+            </l>
+            <l n="2">
+              in lingua francese
+            </l>
+            <l n="3">
+              ha tradotto il <hi rend="italic">Bestiario</hi>,
+            </l>
+            <l n="4">
+              un libro in latino,
+            </l>
+            <l n="5">
+              Per l’onore di una creatura preziosa
+            </l>
+            <l n="6">
+              che è una donna molto bella:
+            </l>
+            <l n="7">
+              Aliz è il suo nome
+            </l>
+            <l n="8">
+              e ha la corona di regina.
+            </l>
+          </lg>
+        </div>
+    </body>
+  </text>
+</TEI>
